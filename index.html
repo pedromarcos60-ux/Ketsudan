@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ketsudan | Orientação Vocacional e Descoberta Profissional</title>
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Ketsudan é um espaço seguro de orientação vocacional para estudantes do ensino médio. Faça testes objetivos e explore informações reais sobre o mercado de trabalho.">
+  <meta name="keywords" content="orientação vocacional, teste vocacional, profissões, mercado de trabalho, ensino médio, carreira, futuro">
+  <meta name="author" content="Pamella - Ketsudan">
+  
+  <!-- Google Fonts: Noto Serif JP (títulos e elementos orientais) e Inter (corpo do texto legível) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Noto+Serif+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <!-- CSS Styling -->
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+
+  <!-- Textura de papel Washi de fundo (Gerada via gradiente e filtro sutil) -->
+  <div class="washi-texture"></div>
+
+  <!-- Cabeçalho Principal -->
+  <header class="main-header">
+    <div class="header-container">
+      <div class="logo-area" id="logo-btn" role="button" tabindex="0">
+        <span class="logo-hanko">決</span>
+        <span class="logo-text">Ketsudan</span>
+      </div>
+      
+      <nav class="main-nav" aria-label="Navegação Principal">
+        <ul>
+          <li><button class="nav-link active" data-target="home">Início</button></li>
+          <li><button class="nav-link" data-target="testes">Testes Vocacionais</button></li>
+          <li><button class="nav-link" data-target="profissoes">Profissões</button></li>
+          <li><button class="nav-link" data-target="relatos">Relatos Reais</button></li>
+        </ul>
+      </nav>
+
+      <div class="user-status-area">
+        <button id="auth-nav-btn" class="btn-outline">Entrar / Cadastrar</button>
+        <div id="user-profile-summary" class="user-profile-summary hidden">
+          <span class="user-welcome">Olá, <strong id="user-display-name">Pamella</strong></span>
+          <span class="user-hanko-small">決</span>
+          <button id="logout-btn" class="btn-logout" title="Sair da conta">Sair</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Conteúdo Principal SPA -->
+  <main class="main-content">
+    
+    <!-- SEÇÃO 1: HOME (INÍCIO) -->
+    <section id="home-view" class="view active-view" aria-label="Página Inicial">
+      <div class="hero-layout">
+        <div class="hero-content">
+          <div class="hero-decorative-line"></div>
+          <h1 class="hero-title">O caminho para o amanhã começa com a reflexão de hoje.</h1>
+          <p class="hero-subtitle">
+            Um espaço acolhedor e seguro de orientação vocacional, unindo tecnologia e autoconhecimento para ajudar estudantes do ensino médio a traçarem seus próprios caminhos.
+          </p>
+          
+          <div class="hero-actions">
+            <button id="cta-start-btn" class="btn-primary">Descobrir Meu Caminho</button>
+            <button id="cta-explore-btn" class="btn-secondary">Explorar Profissões</button>
+          </div>
+        </div>
+        <div class="hero-image-container">
+          <!-- Ilustração SVG Conceitual Oriental: Portal Torii sob a Lua e Caminhos do Amanhã -->
+          <svg viewBox="0 0 200 200" width="100%" height="100%" class="hero-svg-illustration">
+            <defs>
+              <radialGradient id="grad-lua" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#f5e1ce" />
+                <stop offset="100%" stop-color="#d4a373" stop-opacity="0.2" />
+              </radialGradient>
+            </defs>
+            <circle cx="100" cy="100" r="80" stroke="#960018" stroke-width="1.5" stroke-dasharray="350" stroke-linecap="round" fill="none" opacity="0.3" transform="rotate(-45 100 100)"/>
+            <path d="M 145 45 A 25 25 0 0 1 125 80 A 25 25 0 0 0 150 55 A 25 25 0 0 0 145 45 Z" fill="url(#grad-lua)"/>
+            <path d="M 60 140 L 60 90 M 140 140 L 140 90" stroke="#f5e1ce" stroke-width="4" stroke-linecap="round"/>
+            <path d="M 50 85 Q 100 80 150 85 M 50 93 L 150 93" stroke="#960018" stroke-width="3" stroke-linecap="round"/>
+            <path d="M 90 93 L 90 140 M 110 93 L 110 140" stroke="#f5e1ce" stroke-width="2" opacity="0.5"/>
+            <rect x="75" y="80" width="50" height="8" fill="#960018" rx="2"/>
+            <path d="M 100 140 Q 95 160 50 180" stroke="#d4a373" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            <path d="M 100 140 Q 105 160 150 180" stroke="#d4a373" stroke-width="2.5" stroke-dasharray="4" fill="none" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="hero-philosophy">
+        <div class="philosophy-item">
+          <span class="phil-symbol">心</span>
+          <h3>Clareza</h3>
+          <p>Decisões tomadas com consciência e maturidade, fugindo de visões superficiais.</p>
+        </div>
+        <div class="philosophy-item">
+          <span class="phil-symbol">行</span>
+          <h3>Ação</h3>
+          <p>Informações reais sobre o mercado de trabalho brasileiro e relatos de verdade.</p>
+        </div>
+        <div class="philosophy-item">
+          <span class="phil-symbol">学</span>
+          <h3>Aprendizado</h3>
+          <p>Unindo educação e tecnologia para construir novas possibilidades para o futuro.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEÇÃO 2: LOGIN / CADASTRO -->
+    <section id="auth-view" class="view" aria-label="Autenticação">
+      <div class="auth-split-layout">
+
+        <!-- ===== PAINEL ESQUERDO: LOGIN ===== -->
+        <div class="auth-panel" id="login-panel">
+          <div class="auth-panel-header">
+            <span class="auth-panel-hanko">入</span>
+            <div>
+              <h2 class="auth-panel-title">Entrar</h2>
+              <p class="auth-panel-sub">Acesse sua conta Ketsudan</p>
+            </div>
+          </div>
+
+          <form id="login-form" class="auth-form">
+            <div class="form-group">
+              <label for="login-email">E-mail</label>
+              <input type="email" id="login-email" required placeholder="seuemail@exemplo.com" autocomplete="email">
+            </div>
+
+            <div class="form-group">
+              <label for="login-password">Senha</label>
+              <input type="password" id="login-password" required placeholder="Sua senha secreta" autocomplete="current-password">
+            </div>
+
+            <button type="submit" class="btn-primary btn-block">Acessar Plataforma</button>
+            <div class="form-message error-message hidden" id="login-error"></div>
+          </form>
+
+          <p class="auth-switch-hint">
+            Ainda não tem conta?
+            <button class="auth-switch-link" id="go-to-register-btn">Criar conta gratuita →</button>
+          </p>
+        </div>
+
+        <!-- Divisor vertical -->
+        <div class="auth-divider" aria-hidden="true">
+          <span class="auth-divider-symbol">決</span>
+        </div>
+
+        <!-- ===== PAINEL DIREITO: CADASTRO ===== -->
+        <div class="auth-panel" id="register-panel">
+          <div class="auth-panel-header">
+            <span class="auth-panel-hanko">始</span>
+            <div>
+              <h2 class="auth-panel-title">Criar Conta</h2>
+              <p class="auth-panel-sub">Inicie sua jornada vocacional</p>
+            </div>
+          </div>
+
+          <form id="register-form" class="auth-form">
+            <div class="form-group">
+              <label for="register-name">Como gostaria de ser chamado(a)?</label>
+              <input type="text" id="register-name" required placeholder="Seu apelido ou primeiro nome" autocomplete="nickname">
+            </div>
+
+            <div class="form-group">
+              <label for="register-email">E-mail</label>
+              <input type="email" id="register-email" required placeholder="seuemail@exemplo.com" autocomplete="email">
+              <span class="field-hint" id="email-hint"></span>
+            </div>
+
+            <div class="form-group">
+              <label for="register-school">Escolaridade / Série</label>
+              <select id="register-school" required>
+                <option value="" disabled selected>Selecione sua série</option>
+                <option value="1ano">1º Ano do Ensino Médio</option>
+                <option value="2ano">2º Ano do Ensino Médio</option>
+                <option value="3ano">3º Ano do Ensino Médio</option>
+                <option value="outro">Outro</option>
+              </select>
+            </div>
+
+            <!-- Campo "Outro" condicional -->
+            <div class="form-group hidden" id="school-outro-group">
+              <label for="register-school-outro">Especifique sua escolaridade</label>
+              <input type="text" id="register-school-outro" placeholder="Ex: Curso técnico, já formado..." maxlength="80">
+            </div>
+
+            <div class="form-group">
+              <label for="register-password">Senha</label>
+              <div class="password-input-wrapper">
+                <input type="password" id="register-password" required placeholder="Crie uma senha segura" autocomplete="new-password">
+                <button type="button" id="toggle-password-btn" class="btn-toggle-pw" aria-label="Mostrar/ocultar senha" title="Ver senha">👁</button>
+              </div>
+              <div class="password-strength-indicator" id="pw-strength-indicator">
+                <div class="pw-strength-bar">
+                  <div class="pw-strength-fill" id="pw-strength-fill"></div>
+                </div>
+                <ul class="pw-rules-list" id="pw-rules-list">
+                  <li class="pw-rule" id="rule-length">✗ Mínimo 8 caracteres</li>
+                  <li class="pw-rule" id="rule-upper">✗ Pelo menos 1 letra maiúscula</li>
+                  <li class="pw-rule" id="rule-number">✗ Pelo menos 1 número</li>
+                  <li class="pw-rule" id="rule-symbol">✗ Pelo menos 1 símbolo (!@#$...)</li>
+                </ul>
+              </div>
+            </div>
+
+            <button type="submit" class="btn-primary btn-block" id="register-submit-btn">Criar Meu Perfil</button>
+            <div class="form-message error-message hidden" id="register-error"></div>
+            <div class="form-message success-message hidden" id="register-success"></div>
+          </form>
+
+          <p class="auth-switch-hint">
+            Já tem uma conta?
+            <button class="auth-switch-link" id="go-to-login-btn">← Fazer login</button>
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SEÇÃO 3: TESTES VOCACIONAIS -->
+    <section id="testes-view" class="view" aria-label="Testes Vocacionais">
+      <!-- Caso o usuário não esteja logado -->
+      <div id="testes-guest-state" class="testes-card guest-state">
+        <span class="card-icon-big">🔒</span>
+        <h2>Área de Autoconhecimento Reservada</h2>
+        <p>
+          Para que possamos calcular com precisão sua afinidade profissional e permitir que você compare os resultados no futuro, faça o login ou crie sua conta gratuitamente.
+        </p>
+        <button id="guest-to-auth-btn" class="btn-primary">Criar Conta ou Entrar</button>
+      </div>
+
+      <!-- Usuário Logado - Seleção do Teste -->
+      <div id="testes-selection-state" class="testes-selection hidden">
+        <div class="section-title-area">
+          <h2 class="section-title">Escolha seu método de reflexão</h2>
+          <p class="section-subtitle">Disponibilizamos dois testes objetivos e complementares para ampliar sua percepção sobre si mesmo.</p>
+        </div>
+        
+        <div class="testes-grid">
+          <!-- Card Teste 1 -->
+          <div class="teste-option-card">
+            <div class="teste-card-decor"></div>
+            <span class="teste-icon">📌</span>
+            <h3>Preferências de Atividades</h3>
+            <p>Mapeamento de afinidade com base nas atividades que você mais gosta de realizar no seu tempo livre e ambiente escolar.</p>
+            <button id="start-test-pref" class="btn-primary">Iniciar Teste de Preferências</button>
+          </div>
+          
+          <!-- Card Teste 2 -->
+          <div class="teste-option-card">
+            <div class="teste-card-decor"></div>
+            <span class="teste-icon">🗺️</span>
+            <h3>Cenários Situacionais</h3>
+            <p>Mapeia seu perfil comportamental e de atitude resolvendo dilemas práticos de projetos e situações do dia a dia profissional.</p>
+            <button id="start-test-situ" class="btn-primary">Iniciar Teste de Cenários</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interface de Execução do Teste (Quiz) -->
+      <div id="testes-quiz-state" class="testes-card quiz-state hidden">
+        <div class="quiz-header">
+          <button id="quit-quiz-btn" class="btn-back">← Voltar</button>
+          <span id="quiz-title-display" class="quiz-title-tag">Teste de Preferências</span>
+          <span id="quiz-progress-text" class="quiz-progress-counter">Pergunta 1 de 5</span>
+        </div>
+        
+        <!-- Barra de Progresso -->
+        <div class="progress-bar-container">
+          <div id="quiz-progress-bar" class="progress-bar" style="width: 20%;"></div>
+        </div>
+        
+        <div class="quiz-question-container">
+          <h3 id="quiz-question-text" class="quiz-question">Qual atividade você mais gosta de fazer no seu final de semana livre?</h3>
+          <div id="quiz-options-list" class="quiz-options-list">
+            <!-- As opções de botões serão geradas dinamicamente via JavaScript -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Tela de Resultados do Teste -->
+      <div id="testes-result-state" class="testes-card result-state hidden">
+        <div class="result-header">
+          <span class="result-hanko">決</span>
+          <h2>Seu Perfil Vocacional Mapeado</h2>
+          <p>Com base em suas respostas objetivas, analisamos suas afinidades nas principais áreas do mercado.</p>
+        </div>
+
+        <div class="result-layout">
+          <!-- Bloco Principal do Perfil de Maior Afinidade -->
+          <div class="result-highlight-box">
+            <h3>Área de Maior Afinidade</h3>
+            <div class="dominant-area-header-layout">
+              <div class="dominant-area-text-side">
+                <div class="dominant-area-title" id="dominant-area-name">TECNOLOGIA</div>
+                <p id="dominant-area-desc" class="dominant-area-desc">
+                  Você demonstra grande inclinação para resolver problemas lógicos, estruturar soluções digitais e trabalhar com tecnologia, criação de ferramentas ou análise de sistemas.
+                </p>
+              </div>
+              <div class="dominant-area-image-wrapper" id="dominant-area-media">
+                <!-- Inserido dinamicamente via JS (ilustração SVG correspondente) -->
+              </div>
+            </div>
+            
+            <div class="recommended-professions-box">
+              <h4>Profissões Recomendadas para você:</h4>
+              <ul id="recommended-professions-list" class="recommended-prof-list">
+                <!-- Inserido dinamicamente -->
+              </ul>
+            </div>
+          </div>
+
+          <!-- Bloco de Gráfico com Afinidades de Todas as Áreas -->
+          <div class="result-chart-box">
+            <h3>Gráfico de Compatibilidade</h3>
+            <p class="chart-helper">Abaixo estão suas pontuações de afinidade por área:</p>
+            <div class="chart-bars" id="chart-bars-container">
+              <!-- Gerado via JS: Barras de progresso com porcentagens -->
+            </div>
+          </div>
+        </div>
+
+        <div class="result-actions">
+          <button id="btn-restart-quiz" class="btn-secondary">Fazer Outro Teste</button>
+          <button id="btn-go-to-professions" class="btn-primary">Ver Todas as Profissões</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEÇÃO 4: GUIA DE PROFISSÕES -->
+    <section id="profissoes-view" class="view" aria-label="Guia de Profissões">
+      <div class="section-title-area">
+        <h2 class="section-title">Guia de Profissões e Mercado</h2>
+        <p class="section-subtitle">
+          Explore dados realistas sobre salários, o que se faz no dia a dia e quais habilidades são mais valorizadas no mercado de trabalho atual.
+        </p>
+      </div>
+
+      <!-- Barra de Filtros e Pesquisa -->
+      <div class="filter-search-container">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="search-profession-input" placeholder="Pesquise por nome de profissão...">
+        </div>
+        
+        <div class="filter-tags" id="category-filter-tags" role="tablist" aria-label="Filtro de Profissões por Área">
+          <button class="filter-tag active-tag" data-category="Todas" role="tab" aria-selected="true">Todas</button>
+          <button class="filter-tag" data-category="Tecnologia" role="tab" aria-selected="false">Tecnologia</button>
+          <button class="filter-tag" data-category="Saúde" role="tab" aria-selected="false">Saúde</button>
+          <button class="filter-tag" data-category="Artes/Design" role="tab" aria-selected="false">Artes & Design</button>
+          <button class="filter-tag" data-category="Negócios" role="tab" aria-selected="false">Negócios</button>
+          <button class="filter-tag" data-category="Humanas" role="tab" aria-selected="false">Ciências Humanas</button>
+        </div>
+      </div>
+
+      <!-- Grade de Profissões -->
+      <div class="professions-grid" id="professions-grid-container">
+        <!-- Renderizado dinamicamente via JS -->
+      </div>
+    </section>
+
+    <!-- SEÇÃO 5: RELATOS REAIS -->
+    <section id="relatos-view" class="view" aria-label="Relatos de Profissionais">
+      <div class="section-title-area">
+        <h2 class="section-title">Mural de Vivências Reais</h2>
+        <p class="section-subtitle">
+          Leia depoimentos sinceros de pessoas que atuam nessas áreas, contando suas trajetórias e os desafios reais enfrentados.
+        </p>
+      </div>
+
+      <div class="relatos-container" id="relatos-container-list">
+        <!-- Renderizado dinamicamente via JS -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL DE DETALHES DE PROFISSÃO -->
+  <div id="profession-detail-modal" class="modal hidden" aria-hidden="true" role="dialog">
+    <div class="modal-overlay" id="modal-overlay-btn"></div>
+    <div class="modal-content">
+      <button class="modal-close-btn" id="modal-close-btn" aria-label="Fechar Modal">&times;</button>
+      
+      <div class="modal-header">
+        <span id="modal-prof-icon" class="modal-icon-badge">💻</span>
+        <div>
+          <h2 id="modal-prof-name" class="modal-title">Desenvolvedor(a) de Software</h2>
+          <span id="modal-prof-category" class="modal-category-tag">TECNOLOGIA</span>
+        </div>
+      </div>
+
+      <div class="modal-body">
+        <div class="modal-section">
+          <h3>O que faz no dia a dia?</h3>
+          <p id="modal-prof-desc">Descrição completa da profissão...</p>
+          <ul id="modal-prof-activities" class="activities-list">
+            <!-- Lista gerada dinamicamente -->
+          </ul>
+        </div>
+
+        <div class="modal-two-columns">
+          <div class="modal-section card-accent-bg">
+            <h3>Remuneração Média (Brasil)</h3>
+            <div class="salary-display">
+              <div>
+                <span class="salary-label">Entrada / Júnior</span>
+                <span id="modal-prof-sal-entry" class="salary-value">R$ 3.500</span>
+              </div>
+              <div class="salary-divider"></div>
+              <div>
+                <span class="salary-label">Sênior / Especialista</span>
+                <span id="modal-prof-sal-senior" class="salary-value">R$ 15.000+</span>
+              </div>
+            </div>
+            <p class="salary-note">*Os salários podem variar conforme região e tamanho da empresa.</p>
+          </div>
+
+          <div class="modal-section">
+            <h3>Habilidades Necessárias</h3>
+            <div id="modal-prof-skills" class="skills-tags-container">
+              <!-- Tags de habilidades -->
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-section">
+          <h3>Mercado de Trabalho</h3>
+          <p id="modal-prof-market">Visão geral sobre o mercado...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rodapé -->
+  <footer class="main-footer">
+    <div class="footer-container">
+      <p>&copy; 2026 Ketsudan. Desenvolvido com carinho por <strong>Pamella</strong>.</p>
+      <p class="footer-subtext">Unindo educação e tecnologia para inspirar o futuro dos estudantes do Ensino Médio.</p>
+      <div class="footer-decor-hanko">決</div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -26,7 +26,7 @@
   <header class="main-header">
     <div class="header-container">
       <div class="logo-area" id="logo-btn" role="button" tabindex="0">
-        <span class="logo-hanko">決</span>
+        <img src="assets/logo.jpg" alt="Logo Ketsudan" class="logo-img">
         <span class="logo-text">Ketsudan</span>
       </div>
       
@@ -108,11 +108,10 @@
       </div>
     </section>
 
-    <!-- SEÇÃO 2: LOGIN / CADASTRO -->
-    <section id="auth-view" class="view" aria-label="Autenticação">
-      <div class="auth-split-layout">
-
-        <!-- ===== PAINEL ESQUERDO: LOGIN ===== -->
+    <!-- SEÇÃO 2: LOGIN -->
+    <section id="login-view" class="view" aria-label="Login">
+      <div class="auth-single-layout">
+        <!-- ===== PAINEL DE LOGIN ===== -->
         <div class="auth-panel" id="login-panel">
           <div class="auth-panel-header">
             <span class="auth-panel-hanko">入</span>
@@ -142,13 +141,13 @@
             <button class="auth-switch-link" id="go-to-register-btn">Criar conta gratuita →</button>
           </p>
         </div>
+      </div>
+    </section>
 
-        <!-- Divisor vertical -->
-        <div class="auth-divider" aria-hidden="true">
-          <span class="auth-divider-symbol">決</span>
-        </div>
-
-        <!-- ===== PAINEL DIREITO: CADASTRO ===== -->
+    <!-- SEÇÃO 2.5: CADASTRO -->
+    <section id="register-view" class="view" aria-label="Cadastro">
+      <div class="auth-single-layout">
+        <!-- ===== PAINEL DE CADASTRO ===== -->
         <div class="auth-panel" id="register-panel">
           <div class="auth-panel-header">
             <span class="auth-panel-hanko">始</span>
@@ -216,7 +215,6 @@
             <button class="auth-switch-link" id="go-to-login-btn">← Fazer login</button>
           </p>
         </div>
-
       </div>
     </section>
 
@@ -256,6 +254,17 @@
             <h3>Cenários Situacionais</h3>
             <p>Mapeia seu perfil comportamental e de atitude resolvendo dilemas práticos de projetos e situações do dia a dia profissional.</p>
             <button id="start-test-situ" class="btn-primary">Iniciar Teste de Cenários</button>
+          </div>
+        </div>
+
+        <!-- Histórico de Testes Salvos (IndexedDB) -->
+        <div class="testes-historico-section hidden" id="testes-historico-section">
+          <div class="historico-header">
+            <h3>Seu Histórico de Reflexão</h3>
+            <button id="btn-clear-history" class="btn-clear-history" title="Limpar todos os registros do histórico">Limpar Histórico</button>
+          </div>
+          <div class="historico-list" id="historico-list-container">
+            <!-- Renderizado dinamicamente via JS -->
           </div>
         </div>
       </div>
@@ -445,6 +454,7 @@
 
   <!-- Scripts -->
   <script src="data.js"></script>
+  <script src="db.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

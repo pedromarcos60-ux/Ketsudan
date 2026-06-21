@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentUser = null;
   let currentQuizQuestions = [];
   let currentQuestionIndex = 0;
+  let currentQuizType = ""; // "preferencias" ou "situacional"
   let quizAnswers = {
     "Tecnologia": 0,
     "Saúde": 0,
@@ -18,12 +19,18 @@ document.addEventListener("DOMContentLoaded", () => {
   let activeCategoryFilter = "Todas";
   let activeSearchTerm = "";
 
-  // Carregar dados salvos no localStorage (se existirem)
-  const savedUser = localStorage.getItem("ketsudan_user");
-  if (savedUser) {
-    currentUser = JSON.parse(savedUser);
-    atualizarInterfaceUsuario();
-  }
+  // Inicializar banco de dados IndexedDB
+  KetsudanDB.init().then(() => {
+    console.log("IndexedDB pronto para uso no app.");
+    // Carregar dados salvos no localStorage (se existirem)
+    const savedUser = localStorage.getItem("ketsudan_user");
+    if (savedUser) {
+      currentUser = JSON.parse(savedUser);
+      atualizarInterfaceUsuario();
+    }
+  }).catch(err => {
+    console.error("Falha ao inicializar o banco de dados:", err);
+  });
 
   // ==========================================
   // ROTEAMENTO SPA (Single Page Application)
@@ -96,28 +103,26 @@ document.addEventListener("DOMContentLoaded", () => {
   const loginError = document.getElementById("login-error");
   const registerError = document.getElementById("register-error");
 
-  // Botão "Criar conta gratuita →" (no painel de login) → foca o cadastro
+  // Botão "Criar conta gratuita →" (no painel de login) → navega para cadastro
   document.getElementById("go-to-register-btn").addEventListener("click", () => {
-    const panel = document.getElementById("register-panel");
-    panel.scrollIntoView({ behavior: "smooth", block: "start" });
-    setTimeout(() => document.getElementById("register-name").focus(), 400);
+    navegarPara("register");
+    setTimeout(() => document.getElementById("register-name").focus(), 150);
   });
 
-  // Botão "← Fazer login" (no painel de cadastro) → foca o login
+  // Botão "← Fazer login" (no painel de cadastro) → navega para login
   document.getElementById("go-to-login-btn").addEventListener("click", () => {
-    const panel = document.getElementById("login-panel");
-    panel.scrollIntoView({ behavior: "smooth", block: "start" });
-    setTimeout(() => document.getElementById("login-email").focus(), 400);
+    navegarPara("login");
+    setTimeout(() => document.getElementById("login-email").focus(), 150);
   });
 
-  // Botão "Entrar / Cadastrar" no cabeçalho → navega para auth
+  // Botão "Entrar / Cadastrar" no cabeçalho → navega para login
   authNavBtn.addEventListener("click", () => {
-    navegarPara("auth");
+    navegarPara("login");
   });
 
-  // Botão da área de testes bloqueada → navega para auth
+  // Botão da área de testes bloqueada → navega para login
   document.getElementById("guest-to-auth-btn").addEventListener("click", () => {
-    navegarPara("auth");
+    navegarPara("login");
   });
 
   // =================================================
@@ -147,19 +152,22 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Verificar e-mail duplicado em tempo real (no blur)
-  registerEmailInput.addEventListener("blur", () => {
+  registerEmailInput.addEventListener("blur", async () => {
     const email = registerEmailInput.value.trim();
     if (!email) return;
-    const users = JSON.parse(localStorage.getItem("ketsudan_registered_users") || "[]");
-    const emailJaCadastrado = users.some(u => u.email === email);
-    if (emailJaCadastrado) {
-      emailHint.textContent = "⚠ Este e-mail já está cadastrado.";
-      emailHint.className = "field-hint hint-error";
-      registerEmailInput.classList.add("input-error");
-    } else if (email) {
-      emailHint.textContent = "✓ E-mail disponível.";
-      emailHint.className = "field-hint hint-ok";
-      registerEmailInput.classList.remove("input-error");
+    try {
+      const user = await KetsudanDB.getUser(email);
+      if (user) {
+        emailHint.textContent = "⚠ Este e-mail já está cadastrado.";
+        emailHint.className = "field-hint hint-error";
+        registerEmailInput.classList.add("input-error");
+      } else {
+        emailHint.textContent = "✓ E-mail disponível.";
+        emailHint.className = "field-hint hint-ok";
+        registerEmailInput.classList.remove("input-error");
+      }
+    } catch (err) {
+      console.error("Erro ao verificar e-mail duplicado:", err);
     }
   });
 
@@ -220,7 +228,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Submeter Formulário de Cadastro
-  registerForm.addEventListener("submit", (e) => {
+  registerForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     registerError.classList.add("hidden");
     registerSuccess.classList.add("hidden");
@@ -255,62 +263,71 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // Verificar se já existe usuário com esse email
-    const users = JSON.parse(localStorage.getItem("ketsudan_registered_users") || "[]");
-    const userExists = users.some(u => u.email === email);
+    try {
+      // Verificar se já existe usuário com esse email no IndexedDB
+      const userExists = await KetsudanDB.getUser(email);
 
-    if (userExists) {
-      registerError.textContent = "Este e-mail já está cadastrado. Tente fazer login.";
+      if (userExists) {
+        registerError.textContent = "Este e-mail já está cadastrado. Tente fazer login.";
+        registerError.classList.remove("hidden");
+        return;
+      }
+
+      // Registrar Usuário no IndexedDB
+      const newUser = { name, email, school, password, registeredAt: new Date().toISOString() };
+      await KetsudanDB.saveUser(newUser);
+
+      // Fazer login automático
+      currentUser = { name, email, school };
+      localStorage.setItem("ketsudan_user", JSON.stringify(currentUser));
+      
+      // Reset do form e atualização de tela
+      registerForm.reset();
+      schoolOutroGroup.classList.add("hidden");
+      emailHint.textContent = "";
+      pwStrengthFill.style.width = "0%";
+      document.querySelectorAll(".pw-rule").forEach(r => {
+        r.classList.remove("rule-ok", "rule-fail");
+      });
+      atualizarInterfaceUsuario();
+      navegarPara("testes");
+    } catch (err) {
+      console.error("Erro ao cadastrar usuário:", err);
+      registerError.textContent = "Erro interno ao conectar ao banco de dados.";
       registerError.classList.remove("hidden");
-      return;
     }
-
-    // Registrar Usuário
-    const newUser = { name, email, school, password };
-    users.push(newUser);
-    localStorage.setItem("ketsudan_registered_users", JSON.stringify(users));
-
-    // Fazer login automático
-    currentUser = { name, email, school };
-    localStorage.setItem("ketsudan_user", JSON.stringify(currentUser));
-    
-    // Reset do form e atualização de tela
-    registerForm.reset();
-    schoolOutroGroup.classList.add("hidden");
-    emailHint.textContent = "";
-    pwStrengthFill.style.width = "0%";
-    document.querySelectorAll(".pw-rule").forEach(r => {
-      r.classList.remove("rule-ok", "rule-fail");
-    });
-    atualizarInterfaceUsuario();
-    navegarPara("testes");
   });
 
   // Submeter Formulário de Login
-  loginForm.addEventListener("submit", (e) => {
+  loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     loginError.classList.add("hidden");
 
     const email = document.getElementById("login-email").value.trim();
     const password = document.getElementById("login-password").value;
 
-    // Verificar se o usuário existe nas contas registradas
-    const users = JSON.parse(localStorage.getItem("ketsudan_registered_users") || "[]");
-    const user = users.find(u => u.email === email && u.password === password);
+    try {
+      // Verificar se o usuário existe no IndexedDB
+      const user = await KetsudanDB.getUser(email);
 
-    if (!user) {
-      loginError.textContent = "E-mail ou senha incorretos.";
+      if (!user || user.password !== password) {
+        loginError.textContent = "E-mail ou senha incorretos.";
+        loginError.classList.remove("hidden");
+        return;
+      }
+
+      // Realizar Login
+      currentUser = { name: user.name, email: user.email, school: user.school };
+      localStorage.setItem("ketsudan_user", JSON.stringify(currentUser));
+
+      loginForm.reset();
+      atualizarInterfaceUsuario();
+      navegarPara("testes");
+    } catch (err) {
+      console.error("Erro ao autenticar usuário:", err);
+      loginError.textContent = "Erro interno ao conectar ao banco de dados.";
       loginError.classList.remove("hidden");
-      return;
     }
-
-    // Realizar Login
-    currentUser = { name: user.name, email: user.email, school: user.school };
-    localStorage.setItem("ketsudan_user", JSON.stringify(currentUser));
-
-    loginForm.reset();
-    atualizarInterfaceUsuario();
-    navegarPara("testes");
   });
 
   // Evento de Logout
@@ -365,6 +382,7 @@ document.addEventListener("DOMContentLoaded", () => {
       testesGuestState.classList.remove("hidden");
     } else {
       testesSelectionState.classList.remove("hidden");
+      renderizarHistoricoTestes();
     }
   }
 
@@ -382,6 +400,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function iniciarQuiz(tipo, bancoDePerguntas) {
     currentQuizQuestions = bancoDePerguntas;
     currentQuestionIndex = 0;
+    currentQuizType = tipo; // "preferencias" ou "situacional"
     
     // Resetar Pontuação
     quizAnswers = {
@@ -464,7 +483,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Calcula os pontos e desenha a tela de resultado
-  function calcularExibirResultados() {
+  async function calcularExibirResultados() {
     testesQuizState.classList.add("hidden");
     testesResultState.classList.remove("hidden");
 
@@ -481,6 +500,23 @@ document.addEventListener("DOMContentLoaded", () => {
         areaDominante = area;
       }
     }
+
+    // Salvar resultado no banco de dados se o usuário estiver logado
+    if (currentUser) {
+      try {
+        const testTypeLabel = currentQuizType === "preferencias" ? "Preferências" : "Cenários";
+        await KetsudanDB.saveTestResult(currentUser.email, testTypeLabel, quizAnswers, areaDominante);
+      } catch (err) {
+        console.error("Erro ao salvar resultado no banco de dados:", err);
+      }
+    }
+
+    exibirResultadosNaTela(quizAnswers, areaDominante);
+  }
+
+  // Desenha a tela de resultado com as respostas fornecidas
+  function exibirResultadosNaTela(answers, dominantArea) {
+    const totalPontos = Object.values(answers).reduce((a, b) => a + b, 0);
 
     // Descrições das áreas
     const descricoesArea = {
@@ -566,20 +602,20 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     // Atualiza a tela de resultados
-    document.getElementById("dominant-area-name").textContent = areaDominante.toUpperCase();
-    document.getElementById("dominant-area-desc").textContent = descricoesArea[areaDominante];
+    document.getElementById("dominant-area-name").textContent = dominantArea.toUpperCase();
+    document.getElementById("dominant-area-desc").textContent = descricoesArea[dominantArea];
     
     // Atualiza a ilustração conceitual SVG correspondente
     const mediaContainer = document.getElementById("dominant-area-media");
     if (mediaContainer) {
-      mediaContainer.innerHTML = svgsArea[areaDominante] || "";
+      mediaContainer.innerHTML = svgsArea[dominantArea] || "";
     }
 
-    // 3. Recomendar profissões dessa área
+    // Recomendar profissões dessa área
     const recomendadoList = document.getElementById("recommended-professions-list");
     recomendadoList.innerHTML = "";
     
-    const profsRecomendadas = ketsudanData.profissoes.filter(p => p.categoria === areaDominante);
+    const profsRecomendadas = ketsudanData.profissoes.filter(p => p.categoria === dominantArea);
     
     profsRecomendadas.forEach(prof => {
       const li = document.createElement("li");
@@ -590,11 +626,10 @@ document.addEventListener("DOMContentLoaded", () => {
       recomendadoList.appendChild(li);
     });
 
-    // 4. Renderizar gráfico de barras dinâmico
+    // Renderizar gráfico de barras dinâmico
     const barsContainer = document.getElementById("chart-bars-container");
     barsContainer.innerHTML = "";
 
-    // Mapear áreas para nomes mais amigáveis no gráfico
     const nomesAmigaveis = {
       "Tecnologia": "Tecnologia",
       "Saúde": "Saúde & Cuidado",
@@ -603,8 +638,7 @@ document.addEventListener("DOMContentLoaded", () => {
       "Humanas": "Ciências Humanas"
     };
 
-    Object.entries(quizAnswers).forEach(([area, pontos]) => {
-      // Calcular porcentagem sutil
+    Object.entries(answers).forEach(([area, pontos]) => {
       const porcentagem = totalPontos > 0 ? Math.round((pontos / totalPontos) * 100) : 0;
       
       const row = document.createElement("div");
@@ -621,12 +655,99 @@ document.addEventListener("DOMContentLoaded", () => {
 
       barsContainer.appendChild(row);
 
-      // Animar enchimento da barra após renderizar
       setTimeout(() => {
         const fill = row.querySelector(".chart-row-bar-fill");
         if (fill) fill.style.width = `${porcentagem}%`;
       }, 150);
     });
+  }
+
+  // Obtém os resultados de teste do banco de dados e os exibe na aba de seleção
+  async function renderizarHistoricoTestes() {
+    const historicoSection = document.getElementById("testes-historico-section");
+    const container = document.getElementById("historico-list-container");
+    const clearBtn = document.getElementById("btn-clear-history");
+
+    if (!currentUser) {
+      historicoSection.classList.add("hidden");
+      return;
+    }
+
+    try {
+      const results = await KetsudanDB.getTestResults(currentUser.email);
+      historicoSection.classList.remove("hidden");
+      container.innerHTML = "";
+
+      if (results.length === 0) {
+        clearBtn.classList.add("hidden");
+        container.innerHTML = `
+          <div class="no-history">
+            <span class="no-history-icon">⛩️</span>
+            <p>Você ainda não possui testes salvos no histórico. Mapeie seu perfil acima!</p>
+          </div>
+        `;
+        return;
+      }
+
+      clearBtn.classList.remove("hidden");
+
+      // Adicionar evento para limpar o histórico
+      clearBtn.onclick = async () => {
+        if (confirm("Deseja realmente limpar todo o seu histórico de testes? Esta ação é irreversível.")) {
+          await KetsudanDB.clearTestResults(currentUser.email);
+          renderizarHistoricoTestes();
+        }
+      };
+
+      const iconesArea = {
+        "Tecnologia": "💻",
+        "Saúde": "🧠",
+        "Artes/Design": "🎨",
+        "Negócios": "💼",
+        "Humanas": "🏫"
+      };
+
+      results.forEach(res => {
+        const dataStr = new Date(res.timestamp).toLocaleDateString("pt-BR", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit"
+        });
+
+        const item = document.createElement("div");
+        item.className = "historico-item";
+        item.innerHTML = `
+          <div class="historico-item-left">
+            <div class="historico-badge">${iconesArea[res.dominantArea] || "決"}</div>
+            <div class="historico-info">
+              <h4>${res.testType}</h4>
+              <span class="historico-date">${dataStr}</span>
+            </div>
+          </div>
+          <div class="historico-item-right">
+            <div class="historico-result-area">
+              <span class="historico-result-label">Resultado principal</span>
+              <div class="historico-result-val">${res.dominantArea}</div>
+            </div>
+            <button class="btn-view-stored-result" data-id="${res.id}">Ver Detalhes →</button>
+          </div>
+        `;
+
+        // Adicionar evento no botão "Ver Detalhes" para carregar o resultado
+        item.querySelector(".btn-view-stored-result").addEventListener("click", () => {
+          testesSelectionState.classList.add("hidden");
+          testesResultState.classList.remove("hidden");
+          exibirResultadosNaTela(res.answers, res.dominantArea);
+        });
+
+        container.appendChild(item);
+      });
+    } catch (err) {
+      console.error("Erro ao renderizar o histórico de testes:", err);
+      container.innerHTML = `<p class="error-message">Erro ao carregar o histórico de testes do banco de dados.</p>`;
+    }
   }
 
   // ==========================================

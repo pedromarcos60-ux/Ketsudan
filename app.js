@@ -140,16 +140,20 @@ document.addEventListener("DOMContentLoaded", () => {
   const registerSuccess = document.getElementById("register-success");
 
   // Mostrar/ocultar campo "Outro" na escolaridade
-  schoolSelect.addEventListener("change", () => {
-    if (schoolSelect.value === "outro") {
-      schoolOutroGroup.classList.remove("hidden");
-      schoolOutroInput.required = true;
-    } else {
-      schoolOutroGroup.classList.add("hidden");
-      schoolOutroInput.required = false;
-      schoolOutroInput.value = "";
-    }
-  });
+  if (schoolSelect) {
+    schoolSelect.addEventListener("change", () => {
+      if (schoolSelect.value === "outro") {
+        if (schoolOutroGroup) schoolOutroGroup.classList.remove("hidden");
+        if (schoolOutroInput) schoolOutroInput.required = true;
+      } else {
+        if (schoolOutroGroup) schoolOutroGroup.classList.add("hidden");
+        if (schoolOutroInput) {
+          schoolOutroInput.required = false;
+          schoolOutroInput.value = "";
+        }
+      }
+    });
+  }
 
   // Verificar e-mail duplicado em tempo real (no blur)
   registerEmailInput.addEventListener("blur", async () => {
@@ -235,9 +239,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const name  = document.getElementById("register-name").value.trim();
     const email = registerEmailInput.value.trim();
-    const schoolVal = schoolSelect.value;
+    const schoolVal = schoolSelect ? schoolSelect.value : "";
     const school = schoolVal === "outro"
-      ? (schoolOutroInput.value.trim() || "Outro")
+      ? ((schoolOutroInput ? schoolOutroInput.value.trim() : "") || "Outro")
       : schoolVal;
     const password = registerPasswordInput.value;
 
@@ -249,7 +253,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Validar escolaridade "Outro"
-    if (schoolVal === "outro" && !schoolOutroInput.value.trim()) {
+    if (schoolVal === "outro" && (!schoolOutroInput || !schoolOutroInput.value.trim())) {
       registerError.textContent = "Por favor, especifique sua escolaridade no campo \"Outro\".";
       registerError.classList.remove("hidden");
       return;

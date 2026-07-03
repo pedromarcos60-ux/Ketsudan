@@ -175,6 +175,22 @@
             </div>
 
             <div class="form-group">
+              <label for="register-school">Escolaridade / Série</label>
+              <select id="register-school" required>
+                <option value="" disabled selected>Selecione sua série</option>
+                <option value="1º Ano do Ensino Médio">1º Ano do Ensino Médio</option>
+                <option value="2º Ano do Ensino Médio">2º Ano do Ensino Médio</option>
+                <option value="3º Ano do Ensino Médio">3º Ano do Ensino Médio</option>
+                <option value="outro">Outro (especificar)</option>
+              </select>
+            </div>
+
+            <div class="form-group hidden" id="school-outro-group">
+              <label for="register-school-outro">Especifique sua escolaridade</label>
+              <input type="text" id="register-school-outro" placeholder="Ex: Ensino Fundamental, Universitário, etc.">
+            </div>
+
+            <div class="form-group">
               <label for="register-password">Senha</label>
               <div class="password-input-wrapper">
                 <input type="password" id="register-password" required placeholder="Crie uma senha segura" autocomplete="new-password">

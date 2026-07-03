@@ -269,6 +269,26 @@
         </div>
       </div>
 
+      <!-- Interface de Execução do Teste (Quiz) -->
+      <div id="testes-quiz-state" class="testes-card quiz-state hidden">
+        <div class="quiz-header">
+          <button id="quit-quiz-btn" class="btn-back">← Voltar</button>
+          <span id="quiz-title-display" class="quiz-title-tag"></span>
+          <span id="quiz-progress-text" class="quiz-progress-counter">Pergunta 1 de 5</span>
+        </div>
+
+        <!-- Barra de Progresso -->
+        <div class="progress-bar-container">
+          <div id="quiz-progress-bar" class="progress-bar" style="width: 20%;"></div>
+        </div>
+
+        <div class="quiz-question-container">
+          <h3 id="quiz-question-text" class="quiz-question"></h3>
+          <div id="quiz-options-list" class="quiz-options-list">
+            <!-- As opções de botões serão geradas dinamicamente via JavaScript -->
+          </div>
+        </div>
+      </div>
 
       <!-- Tela de Resultados do Teste -->
       <div id="testes-result-state" class="testes-card result-state hidden">

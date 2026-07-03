@@ -119,9 +119,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // AUTENTICAÇÃO SIMULADA (localStorage)
   // ==========================================
   const authNavBtn = document.getElementById("auth-nav-btn");
-  const userProfileSummary = document.getElementById("user-profile-summary");
-  const userDisplayName = document.getElementById("user-display-name");
-  const logoutBtn = document.getElementById("logout-btn");
+  const userProfileSummary = document.getElementById("user-profile-summary"); // removido do header
+  const userDisplayName = document.getElementById("user-display-name");       // removido do header
+  const logoutBtn = document.getElementById("logout-btn");                    // removido do header
 
   const loginForm = document.getElementById("login-form");
   const registerForm = document.getElementById("register-form");
@@ -336,22 +336,24 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Evento de Logout
-  logoutBtn.addEventListener("click", () => {
-    currentUser = null;
-    safeLocalStorage.removeItem("ketsudan_user");
-    atualizarInterfaceUsuario();
-    navegarPara("home");
-  });
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", () => {
+      currentUser = null;
+      safeLocalStorage.removeItem("ketsudan_user");
+      atualizarInterfaceUsuario();
+      navegarPara("home");
+    });
+  }
 
   // Atualiza botões do cabeçalho
   function atualizarInterfaceUsuario() {
     if (currentUser) {
       authNavBtn.classList.add("hidden");
-      userProfileSummary.classList.remove("hidden");
-      userDisplayName.textContent = currentUser.name.split(" ")[0]; // Pega apenas primeiro nome
+      if (userProfileSummary) userProfileSummary.classList.remove("hidden");
+      if (userDisplayName) userDisplayName.textContent = currentUser.name.split(" ")[0];
     } else {
       authNavBtn.classList.remove("hidden");
-      userProfileSummary.classList.add("hidden");
+      if (userProfileSummary) userProfileSummary.classList.add("hidden");
     }
   }
 

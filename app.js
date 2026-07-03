@@ -156,8 +156,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // =================================================
 
   const schoolSelect = document.getElementById("register-school");
-  const schoolOutroGroup = document.getElementById("school-outro-group");
-  const schoolOutroInput = document.getElementById("register-school-outro");
   const registerEmailInput = document.getElementById("register-email");
   const emailHint = document.getElementById("email-hint");
   const registerPasswordInput = document.getElementById("register-password");
@@ -165,21 +163,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const pwStrengthFill = document.getElementById("pw-strength-fill");
   const registerSuccess = document.getElementById("register-success");
 
-  // Mostrar/ocultar campo "Outro" na escolaridade
-  if (schoolSelect) {
-    schoolSelect.addEventListener("change", () => {
-      if (schoolSelect.value === "outro") {
-        if (schoolOutroGroup) schoolOutroGroup.classList.remove("hidden");
-        if (schoolOutroInput) schoolOutroInput.required = true;
-      } else {
-        if (schoolOutroGroup) schoolOutroGroup.classList.add("hidden");
-        if (schoolOutroInput) {
-          schoolOutroInput.required = false;
-          schoolOutroInput.value = "";
-        }
-      }
-    });
-  }
+
 
   // Verificar e-mail duplicado em tempo real (no blur)
   registerEmailInput.addEventListener("blur", async () => {
@@ -265,10 +249,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const name  = document.getElementById("register-name").value.trim();
     const email = registerEmailInput.value.trim();
-    const schoolVal = schoolSelect ? schoolSelect.value : "";
-    const school = schoolVal === "outro"
-      ? ((schoolOutroInput ? schoolOutroInput.value.trim() : "") || "Outro")
-      : schoolVal;
+    const school = schoolSelect ? schoolSelect.value : "";
     const password = registerPasswordInput.value;
 
     // Validar apelido
@@ -278,12 +259,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // Validar escolaridade "Outro"
-    if (schoolVal === "outro" && (!schoolOutroInput || !schoolOutroInput.value.trim())) {
-      registerError.textContent = "Por favor, especifique sua escolaridade no campo \"Outro\".";
-      registerError.classList.remove("hidden");
-      return;
-    }
+
 
     // Validar força da senha
     const rules = verificarForcaSenha(password);
@@ -313,7 +289,6 @@ document.addEventListener("DOMContentLoaded", () => {
       
       // Reset do form e atualização de tela
       registerForm.reset();
-      schoolOutroGroup.classList.add("hidden");
       emailHint.textContent = "";
       pwStrengthFill.style.width = "0%";
       document.querySelectorAll(".pw-rule").forEach(r => {
@@ -741,13 +716,14 @@ document.addEventListener("DOMContentLoaded", () => {
       const porcentagem = totalPontos > 0 ? Math.round((pontos / totalPontos) * 100) : 0;
       const row = document.createElement("div");
       row.className = "chart-row";
+      const barClass = area === dominantArea ? "chart-row-bar-fill dominant-bar" : "chart-row-bar-fill";
       row.innerHTML = `
         <div class="chart-row-label">
           <span>${nomesAmigaveis[area]}</span>
           <span>${porcentagem}%</span>
         </div>
         <div class="chart-row-bar-bg">
-          <div class="chart-row-bar-fill ${area === dominantArea ? "dominant-bar" : ""}" style="width: 0%;"></div>
+          <div class="${barClass}" style="width: 0%;"></div>
         </div>
       `;
       barsContainer.appendChild(row);
@@ -777,9 +753,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const porcentagem = totalPontos > 0 ? Math.round((pontos / totalPontos) * 100) : 0;
       const card = document.createElement("div");
-      card.className = `ranking-card ${index === 0 ? "ranking-top" : ""}`;
+      const cardClass = index === 0 ? "ranking-card ranking-top" : "ranking-card";
+      card.className = cardClass;
+      const posLabel = medalhas[index] || ('#' + (index + 1));
       card.innerHTML = `
-        <div class="ranking-position">${medalhas[index] || `#${index + 1}`}</div>
+        <div class="ranking-position">${posLabel}</div>
         <div class="ranking-info">
           <div class="ranking-name">${prof.icone} ${prof.nome}</div>
           <div class="ranking-bar-wrap">
@@ -796,6 +774,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
       container.appendChild(card);
 
+      setTimeout(() => {
+        const fill = card.querySelector(".ranking-bar-fill");
+        if (fill) fill.style.width = `${porcentagem}%`;
+      }, 100 + index * 80);
+    });
+  }
 
   // Obtém os resultados de teste do banco de dados e os exibe na aba de seleção
   async function renderizarHistoricoTestes() {

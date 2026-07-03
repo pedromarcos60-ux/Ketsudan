@@ -3,43 +3,61 @@ const KetsudanDB = {
   dbName: "KetsudanDB",
   dbVersion: 1,
   db: null,
+  useMemoryDB: false,
+  memoryStore: {
+    users: {},
+    test_results: []
+  },
 
   // Inicializa o banco de dados e cria as object stores (tabelas) necessárias
   init() {
     return new Promise((resolve, reject) => {
-      const request = indexedDB.open(this.dbName, this.dbVersion);
-
-      request.onerror = (event) => {
-        console.error("Erro ao inicializar IndexedDB:", event.target.error);
-        reject(event.target.error);
-      };
-
-      request.onsuccess = (event) => {
-        this.db = event.target.result;
-        console.log("Banco de dados local KetsudanDB pronto.");
-        resolve(this.db);
-      };
-
-      request.onupgradeneeded = (event) => {
-        const db = event.target.result;
-
-        // Tabela de usuários (chave primária é o email)
-        if (!db.objectStoreNames.contains("users")) {
-          db.createObjectStore("users", { keyPath: "email" });
+      try {
+        if (typeof indexedDB === "undefined") {
+          throw new Error("IndexedDB não é suportado.");
         }
+        const request = indexedDB.open(this.dbName, this.dbVersion);
 
-        // Tabela de histórico de testes (autoincrementável com index por email)
-        if (!db.objectStoreNames.contains("test_results")) {
-          const resultsStore = db.createObjectStore("test_results", { keyPath: "id", autoIncrement: true });
-          resultsStore.createIndex("email", "email", { unique: false });
-        }
-      };
+        request.onerror = (event) => {
+          console.warn("Erro IndexedDB, ativando banco em memória:", event.target.error);
+          this.useMemoryDB = true;
+          resolve(null);
+        };
+
+        request.onsuccess = (event) => {
+          this.db = event.target.result;
+          console.log("Banco de dados local KetsudanDB pronto.");
+          resolve(this.db);
+        };
+
+        request.onupgradeneeded = (event) => {
+          const db = event.target.result;
+
+          // Tabela de usuários (chave primária é o email)
+          if (!db.objectStoreNames.contains("users")) {
+            db.createObjectStore("users", { keyPath: "email" });
+          }
+
+          // Tabela de histórico de testes (autoincrementável com index por email)
+          if (!db.objectStoreNames.contains("test_results")) {
+            const resultsStore = db.createObjectStore("test_results", { keyPath: "id", autoIncrement: true });
+            resultsStore.createIndex("email", "email", { unique: false });
+          }
+        };
+      } catch (error) {
+        console.warn("Erro ao inicializar IndexedDB, usando banco em memória:", error);
+        this.useMemoryDB = true;
+        resolve(null);
+      }
     });
   },
 
   // Retorna um usuário cadastrado pelo email
   getUser(email) {
     return new Promise((resolve, reject) => {
+      if (this.useMemoryDB) {
+        return resolve(this.memoryStore.users[email] || null);
+      }
       if (!this.db) return reject("Banco de dados não inicializado.");
       const transaction = this.db.transaction(["users"], "readonly");
       const store = transaction.objectStore("users");
@@ -53,6 +71,10 @@ const KetsudanDB = {
   // Salva ou atualiza um usuário no banco
   saveUser(user) {
     return new Promise((resolve, reject) => {
+      if (this.useMemoryDB) {
+        this.memoryStore.users[user.email] = JSON.parse(JSON.stringify(user));
+        return resolve(true);
+      }
       if (!this.db) return reject("Banco de dados não inicializado.");
       const transaction = this.db.transaction(["users"], "readwrite");
       const store = transaction.objectStore("users");
@@ -66,7 +88,6 @@ const KetsudanDB = {
   // Salva o resultado de um teste associado a um usuário (email)
   saveTestResult(email, testType, answers, dominantArea) {
     return new Promise((resolve, reject) => {
-      if (!this.db) return reject("Banco de dados não inicializado.");
       const resultData = {
         email,
         testType,
@@ -74,6 +95,15 @@ const KetsudanDB = {
         dominantArea,
         timestamp: new Date().toISOString()
       };
+
+      if (this.useMemoryDB) {
+        const nextId = this.memoryStore.test_results.length + 1;
+        resultData.id = nextId;
+        this.memoryStore.test_results.push(resultData);
+        return resolve(true);
+      }
+
+      if (!this.db) return reject("Banco de dados não inicializado.");
 
       const transaction = this.db.transaction(["test_results"], "readwrite");
       const store = transaction.objectStore("test_results");
@@ -87,6 +117,12 @@ const KetsudanDB = {
   // Obtém todos os resultados de teste de um usuário ordenados do mais recente para o mais antigo
   getTestResults(email) {
     return new Promise((resolve, reject) => {
+      if (this.useMemoryDB) {
+        const results = this.memoryStore.test_results.filter(r => r.email === email);
+        results.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        return resolve(JSON.parse(JSON.stringify(results)));
+      }
+
       if (!this.db) return reject("Banco de dados não inicializado.");
       const transaction = this.db.transaction(["test_results"], "readonly");
       const store = transaction.objectStore("test_results");
@@ -95,7 +131,6 @@ const KetsudanDB = {
 
       request.onsuccess = (event) => {
         const results = event.target.result || [];
-        // Ordenar decrescente por data/timestamp
         results.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
         resolve(results);
       };
@@ -106,6 +141,11 @@ const KetsudanDB = {
   // Limpa o histórico de testes de um usuário específico
   clearTestResults(email) {
     return new Promise((resolve, reject) => {
+      if (this.useMemoryDB) {
+        this.memoryStore.test_results = this.memoryStore.test_results.filter(r => r.email !== email);
+        return resolve(true);
+      }
+
       if (!this.db) return reject("Banco de dados não inicializado.");
       const transaction = this.db.transaction(["test_results"], "readwrite");
       const store = transaction.objectStore("test_results");

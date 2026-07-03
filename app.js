@@ -2,6 +2,32 @@
 
 document.addEventListener("DOMContentLoaded", () => {
   
+  // Helper para contornar bloqueios de localStorage em arquivos locais (file://)
+  const safeLocalStorage = {
+    getItem(key) {
+      try {
+        return localStorage.getItem(key);
+      } catch (e) {
+        return this._data[key] || null;
+      }
+    },
+    setItem(key, value) {
+      try {
+        localStorage.setItem(key, value);
+      } catch (e) {
+        this._data[key] = String(value);
+      }
+    },
+    removeItem(key) {
+      try {
+        localStorage.removeItem(key);
+      } catch (e) {
+        delete this._data[key];
+      }
+    },
+    _data: {}
+  };
+
   // ==========================================
   // ESTADO GLOBAL DO APLICATIVO
   // ==========================================
@@ -23,7 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
   KetsudanDB.init().then(() => {
     console.log("IndexedDB pronto para uso no app.");
     // Carregar dados salvos no localStorage (se existirem)
-    const savedUser = localStorage.getItem("ketsudan_user");
+    const savedUser = safeLocalStorage.getItem("ketsudan_user");
     if (savedUser) {
       currentUser = JSON.parse(savedUser);
       atualizarInterfaceUsuario();
@@ -283,7 +309,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Fazer login automático
       currentUser = { name, email, school };
-      localStorage.setItem("ketsudan_user", JSON.stringify(currentUser));
+      safeLocalStorage.setItem("ketsudan_user", JSON.stringify(currentUser));
       
       // Reset do form e atualização de tela
       registerForm.reset();
@@ -322,7 +348,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Realizar Login
       currentUser = { name: user.name, email: user.email, school: user.school };
-      localStorage.setItem("ketsudan_user", JSON.stringify(currentUser));
+      safeLocalStorage.setItem("ketsudan_user", JSON.stringify(currentUser));
 
       loginForm.reset();
       atualizarInterfaceUsuario();
@@ -337,7 +363,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Evento de Logout
   logoutBtn.addEventListener("click", () => {
     currentUser = null;
-    localStorage.removeItem("ketsudan_user");
+    safeLocalStorage.removeItem("ketsudan_user");
     atualizarInterfaceUsuario();
     navegarPara("home");
   });

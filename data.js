@@ -1662,6 +1662,276 @@ const ketsudanData = {
     }
   ],
 
+  // ==========================================
+  // BANCOS DE PERGUNTAS DO TESTE 2 — POR ÁREA
+  // Cada opção aponta para um profissao.id específico
+  // ==========================================
+
+  testeSituacionalTecnologia: [
+    {
+      id: 1,
+      pergunta: "Você faz parte de uma equipe de tecnologia em crescimento. Qual papel faz mais sentido para você?",
+      opcoes: [
+        { texto: "Escrever o código que faz a aplicação funcionar, do back-end ao front-end.", profissao: "dev-software" },
+        { texto: "Analisar os dados dos usuários e transformar números em decisões estratégicas.", profissao: "analista-dados" },
+        { texto: "Proteger o sistema contra invasões, vazamentos e vulnerabilidades.", profissao: "ciberseguranca" },
+        { texto: "Criar a interface visual que torna o produto intuitivo e bonito de usar.", profissao: "designer-ux-ui" }
+      ]
+    },
+    {
+      id: 2,
+      pergunta: "Um sistema crítico da empresa caiu às 3h da manhã. Como você age?",
+      opcoes: [
+        { texto: "Analiso os logs do código e corrijo o bug o mais rápido possível.", profissao: "programador" },
+        { texto: "Verifico a infraestrutura na nuvem, os servidores e os containers.", profissao: "cloud-computing" },
+        { texto: "Examino se houve acesso não autorizado ou ataque cibernético.", profissao: "ciberseguranca" },
+        { texto: "Gerencio os backups e recupero a integridade do banco de dados.", profissao: "dba" }
+      ]
+    },
+    {
+      id: 3,
+      pergunta: "O que mais te emociona no universo da tecnologia?",
+      opcoes: [
+        { texto: "Treinar modelos de IA que aprendem e raciocinam de forma autônoma.", profissao: "eng-ia" },
+        { texto: "Criar um aplicativo que milhões de pessoas usam no celular todo dia.", profissao: "dev-mobile" },
+        { texto: "Construir sistemas que escalam para suportar bilhões de requisições.", profissao: "arquiteto-software" },
+        { texto: "Desenvolver o código de jogos e trazer mecânicas inovadoras à vida.", profissao: "dev-jogos" }
+      ]
+    },
+    {
+      id: 4,
+      pergunta: "Qual das seguintes situações de trabalho te parece mais satisfatória?",
+      opcoes: [
+        { texto: "Entregar um sistema web completo, do servidor até a tela do usuário.", profissao: "dev-web" },
+        { texto: "Descobrir um padrão nos dados que ninguém tinha percebido antes.", profissao: "cientista-dados" },
+        { texto: "Configurar a rede corporativa garantindo velocidade e segurança.", profissao: "eng-redes" },
+        { texto: "Mapear os requisitos de um sistema e traduzir necessidades do negócio em soluções.", profissao: "analista-sistemas" }
+      ]
+    },
+    {
+      id: 5,
+      pergunta: "Como você prefere deixar sua marca na área de tecnologia?",
+      opcoes: [
+        { texto: "Desenvolvendo o hardware e firmware de dispositivos inteligentes.", profissao: "eng-computacao" },
+        { texto: "Dando suporte e garantindo que toda a infraestrutura de TI funcione.", profissao: "tecnico-informatica" },
+        { texto: "Gerenciando a migração completa de uma empresa para a nuvem.", profissao: "cloud-computing" },
+        { texto: "Construindo a arquitetura técnica que toda a equipe de engenharia vai seguir.", profissao: "engenheiro-software" }
+      ]
+    }
+  ],
+
+  testeSituacionalSaude: [
+    {
+      id: 1,
+      pergunta: "Um paciente chega à sua frente com uma queixa séria. Como você prefere ajudá-lo?",
+      opcoes: [
+        { texto: "Faço o diagnóstico clínico completo e prescrevo o tratamento adequado.", profissao: "medico" },
+        { texto: "Cuido diretamente, administro medicamentos e monitoro os sinais vitais.", profissao: "enfermeiro" },
+        { texto: "Ouço sua dor emocional e ofereço suporte psicológico especializado.", profissao: "psicologo" },
+        { texto: "Avaliou seus hábitos alimentares e elaboro um plano nutricional personalizado.", profissao: "nutricionista" }
+      ]
+    },
+    {
+      id: 2,
+      pergunta: "Onde você se imagina trabalhando na área da saúde?",
+      opcoes: [
+        { texto: "Em uma UTI operando ventiladores mecânicos e monitorando a respiração.", profissao: "terapeuta-respiratorio" },
+        { texto: "Em uma clínica de reabilitação ajudando pacientes a recuperarem os movimentos.", profissao: "fisioterapeuta" },
+        { texto: "Em um laboratório realizando análises de sangue e diagnósticos moleculares.", profissao: "biomedico" },
+        { texto: "Em uma farmácia ou indústria manipulando e controlando a qualidade de medicamentos.", profissao: "farmaceutico" }
+      ]
+    },
+    {
+      id: 3,
+      pergunta: "Qual aspecto do cuidado humano te toca mais profundamente?",
+      opcoes: [
+        { texto: "Ajudar crianças com necessidades especiais a desenvolverem independência no dia a dia.", profissao: "terapeuta-ocupacional" },
+        { texto: "Cuidar da saúde bucal e realizar procedimentos estéticos e preventivos.", profissao: "dentista" },
+        { texto: "Tratar distúrbios de fala, linguagem e comunicação em crianças e adultos.", profissao: "fonoaudiologo" },
+        { texto: "Cuidar da saúde e do bem-estar de animais domésticos e silvestres.", profissao: "veterinario" }
+      ]
+    },
+    {
+      id: 4,
+      pergunta: "Como você contribuiria para a saúde da população em larga escala?",
+      opcoes: [
+        { texto: "Planejando políticas de saúde pública e investigando surtos e epidemias.", profissao: "sanitarista" },
+        { texto: "Realizando diagnósticos por imagem como raio-X, tomografia e ressonância.", profissao: "tecnico-radiologia" },
+        { texto: "Avaliando funções cognitivas e reabilitando pacientes com AVC ou Alzheimer.", profissao: "neuropsicólogo" },
+        { texto: "Acompanhando gestantes e conduzindo partos com segurança.", profissao: "obstetra" }
+      ]
+    },
+    {
+      id: 5,
+      pergunta: "Qual frase melhor descreve sua motivação na área da saúde?",
+      opcoes: [
+        { texto: "Quero prescrever exercícios e transformar a vida das pessoas pelo movimento.", profissao: "educador-fisico" },
+        { texto: "Quero tratar doenças complexas e salvar vidas em situações críticas.", profissao: "medico" },
+        { texto: "Quero cuidar da mente, ajudar a superar traumas e ansiedade.", profissao: "psicologo" },
+        { texto: "Quero promover beleza, autoestima e bem-estar com estética avançada.", profissao: "esteticista" }
+      ]
+    }
+  ],
+
+  testeSituacionalArtes: [
+    {
+      id: 1,
+      pergunta: "Você recebe um projeto criativo livre. Qual te anima mais?",
+      opcoes: [
+        { texto: "Criar a identidade visual completa de uma marca do zero.", profissao: "designer-grafico" },
+        { texto: "Projetar a decoração de um apartamento unindo função e estética.", profissao: "designer-interiores" },
+        { texto: "Criar uma coleção de roupas que conta uma história visual.", profissao: "designer-moda" },
+        { texto: "Ilustrar um livro com um estilo visual totalmente autoral.", profissao: "ilustrador" }
+      ]
+    },
+    {
+      id: 2,
+      pergunta: "Em qual ambiente você se imagina criando todos os dias?",
+      opcoes: [
+        { texto: "Em um estúdio de animação dando vida a personagens expressivos.", profissao: "animador" },
+        { texto: "No set de um comercial, definindo cada detalhe visual da cena.", profissao: "diretor-arte" },
+        { texto: "Em um estúdio fotográfico capturando retratos e emoções únicas.", profissao: "fotografo" },
+        { texto: "No computador, modelando mundos tridimensionais em Blender ou Maya.", profissao: "modelador-3d" }
+      ]
+    },
+    {
+      id: 3,
+      pergunta: "Qual tipo de projeto criativo te faz sentir mais realizado?",
+      opcoes: [
+        { texto: "Lançar um jogo indie com mecânicas e storytelling originais.", profissao: "game-designer" },
+        { texto: "Publicar uma graphic novel com história e arte completamente autorais.", profissao: "quadrinista" },
+        { texto: "Produzir um documentário que gera impacto social real.", profissao: "produtor-audiovisual" },
+        { texto: "Editar um vídeo com ritmo e estética que prende o espectador do início ao fim.", profissao: "editor-video" }
+      ]
+    },
+    {
+      id: 4,
+      pergunta: "Qual frase resume sua visão criativa?",
+      opcoes: [
+        { texto: "Quero criar campanhas que mudam a percepção do público sobre uma marca.", profissao: "publicitario" },
+        { texto: "Quero ser a mente criativa que define o tom visual de toda a empresa.", profissao: "diretor-criativo" },
+        { texto: "Quero projetar produtos que unam forma, função e inovação.", profissao: "designer-produto" },
+        { texto: "Quero construir cenários imersivos que transportam o público para outro mundo.", profissao: "cenografo" }
+      ]
+    },
+    {
+      id: 5,
+      pergunta: "Onde você quer que seu trabalho seja visto e reconhecido?",
+      opcoes: [
+        { texto: "Em galerias e museus, com obras que provocam reflexão.", profissao: "artista-visual" },
+        { texto: "Nos edifícios e espaços da cidade que projeto como arquiteto.", profissao: "arquiteto" },
+        { texto: "Nas telas e aplicativos que milhões de pessoas usam diariamente.", profissao: "designer-ux-ui" },
+        { texto: "Nos créditos de um filme ou série animada de grande impacto.", profissao: "animador" }
+      ]
+    }
+  ],
+
+  testeSituacionalNegocios: [
+    {
+      id: 1,
+      pergunta: "Você assume a liderança de uma empresa em crise. O que você prioriza?",
+      opcoes: [
+        { texto: "Analiso o fluxo de caixa e crio um plano financeiro de recuperação.", profissao: "gestor-financeiro" },
+        { texto: "Redesenho os processos e proponho uma reestruturação organizacional.", profissao: "consultor-empresarial" },
+        { texto: "Verifico a contabilidade e as obrigações fiscais para identificar irregularidades.", profissao: "auditor" },
+        { texto: "Analiso o mercado e os indicadores econômicos para traçar a estratégia.", profissao: "economista" }
+      ]
+    },
+    {
+      id: 2,
+      pergunta: "Qual das seguintes rotinas de trabalho te parece mais natural?",
+      opcoes: [
+        { texto: "Prospectar clientes, negociar propostas e fechar contratos.", profissao: "executivo-vendas" },
+        { texto: "Recrutar talentos e construir uma cultura organizacional forte.", profissao: "rh" },
+        { texto: "Gerenciar cronograma, escopo e equipes de um projeto complexo.", profissao: "gestor-projetos" },
+        { texto: "Criar campanhas digitais e analisar métricas de engajamento.", profissao: "analista-marketing" }
+      ]
+    },
+    {
+      id: 3,
+      pergunta: "Qual aspecto do mundo dos negócios te fascina mais?",
+      opcoes: [
+        { texto: "Criar uma startup do zero e escalar com investimentos.", profissao: "empreendedor" },
+        { texto: "Gerenciar importações e exportações negociando internacionalmente.", profissao: "comercio-exterior" },
+        { texto: "Analisar ações e construir carteiras de investimentos rentáveis.", profissao: "analista-investimentos" },
+        { texto: "Garantir que as demonstrações financeiras estejam corretas e em dia.", profissao: "contador" }
+      ]
+    },
+    {
+      id: 4,
+      pergunta: "Onde você se imagina atuando profissionalmente?",
+      opcoes: [
+        { texto: "Avaliando imóveis e fechando negociações com compradores e vendedores.", profissao: "corretor-imoveis" },
+        { texto: "Numa empresa de tecnologia definindo o roadmap do produto.", profissao: "gerente-produto" },
+        { texto: "Num centro de distribuição otimizando rotas e controlando estoques.", profissao: "logistica" },
+        { texto: "Gerenciando uma loja virtual de alto volume com foco em conversão.", profissao: "ecommerce" }
+      ]
+    },
+    {
+      id: 5,
+      pergunta: "Como você gosta de liderar ou contribuir nos negócios?",
+      opcoes: [
+        { texto: "Motivando e coordenando a equipe comercial para bater metas.", profissao: "gestor-comercial" },
+        { texto: "Tomando decisões estratégicas baseadas em dados financeiros.", profissao: "gestor-financeiro" },
+        { texto: "Administrando recursos humanos, materiais e financeiros com visão ampla.", profissao: "administrador" },
+        { texto: "Identificando ineficiências e propondo melhorias nos processos.", profissao: "consultor-empresarial" }
+      ]
+    }
+  ],
+
+  testeSituacionalHumanas: [
+    {
+      id: 1,
+      pergunta: "Você tem a oportunidade de transformar vidas. Como você escolhe fazer isso?",
+      opcoes: [
+        { texto: "Entrando numa sala de aula e ensinando com paixão e didática.", profissao: "professor" },
+        { texto: "Escrevendo uma matéria investigativa que expõe uma injustiça social.", profissao: "jornalista" },
+        { texto: "Representando juridicamente alguém que não tem voz nem recursos.", profissao: "advogado" },
+        { texto: "Acompanhando famílias vulneráveis e conectando-as a políticas públicas.", profissao: "assistente-social" }
+      ]
+    },
+    {
+      id: 2,
+      pergunta: "Qual das seguintes pesquisas te fascina mais?",
+      opcoes: [
+        { texto: "Desvendar como sociedades antigas viviam através de artefatos e escavações.", profissao: "arqueologo" },
+        { texto: "Entender por que as pessoas cometem crimes e como a sociedade pode preveni-los.", profissao: "criminologo" },
+        { texto: "Analisar o comportamento político de uma nação em período eleitoral.", profissao: "cientista-politico" },
+        { texto: "Comparar culturas e rituais de povos indígenas ao redor do mundo.", profissao: "antropologo" }
+      ]
+    },
+    {
+      id: 3,
+      pergunta: "Como você prefere contribuir com o conhecimento humano?",
+      opcoes: [
+        { texto: "Escrevendo artigos acadêmicos sobre fenômenos sociais contemporâneos.", profissao: "sociologo" },
+        { texto: "Organizando e catalogando o conhecimento em bibliotecas físicas e digitais.", profissao: "bibliotecario" },
+        { texto: "Traduzindo obras literárias e técnicas para múltiplos idiomas.", profissao: "tradutor" },
+        { texto: "Pesquisando as relações entre espaço geográfico, ambiente e sociedade.", profissao: "geografo" }
+      ]
+    },
+    {
+      id: 4,
+      pergunta: "Onde você se imagina atuando nas Ciências Humanas?",
+      opcoes: [
+        { texto: "Numa embaixada brasileira negociando acordos bilaterais no exterior.", profissao: "diplomata" },
+        { texto: "Num projeto aplicando filosofia à ética da inteligência artificial.", profissao: "filosofo" },
+        { texto: "Numa escola coordenando projetos pedagógicos e orientando professores.", profissao: "pedagogo" },
+        { texto: "Num instituto analisando crises geopolíticas e relações internacionais.", profissao: "relacoes-internacionais" }
+      ]
+    },
+    {
+      id: 5,
+      pergunta: "Qual é sua maior motivação nas áreas humanas?",
+      opcoes: [
+        { texto: "Entender como os eventos do passado moldaram o mundo em que vivemos.", profissao: "historiador" },
+        { texto: "Conduzir pesquisas científicas que fundamentem políticas públicas melhores.", profissao: "pesquisador-cs" },
+        { texto: "Defender os direitos de alguém num processo judicial complexo.", profissao: "advogado" },
+        { texto: "Despertar o senso crítico e a curiosidade nos jovens estudantes.", profissao: "professor" }
+      ]
+    }
+  ],
+
   // Relatos Reais inspiradores para a seção de depoimentos
   relatos: [
     {

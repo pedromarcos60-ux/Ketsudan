@@ -770,271 +770,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       container.appendChild(card);
 
-      setTimeout(() => {
-        const fill = card.querySelector(".ranking-bar-fill");
-        if (fill) fill.style.width = `${porcentagem}%`;
-      }, 100 + index * 80);
-    });
-  }
-
-
-
-
-
-
-
-  // Obtém os resultados de teste do banco de dados e os exibe na aba de seleção
-  async function renderizarHistoricoTestes() {
-    const historicoSection = document.getElementById("testes-historico-section");
-    const container = document.getElementById("historico-list-container");
-    const clearBtn = document.getElementById("btn-clear-history");
-
-    if (!currentUser) {
-      historicoSection.classList.add("hidden");
-      return;
-    }
-
-
-  // Renderiza a pergunta atual na tela
-  function renderizarPergunta() {
-    const pergunta = currentQuizQuestions[currentQuestionIndex];
-    const totalPerguntas = currentQuizQuestions.length;
-
-    // Atualiza progresso e textos
-    quizProgressText.textContent = `Pergunta ${currentQuestionIndex + 1} de ${totalPerguntas}`;
-    const pctProgresso = ((currentQuestionIndex + 1) / totalPerguntas) * 100;
-    quizProgressBar.style.width = `${pctProgresso}%`;
-    quizQuestionText.textContent = pergunta.pergunta;
-
-    // Renderiza alternativas
-    quizOptionsList.innerHTML = "";
-    pergunta.opcoes.forEach((opcao, indice) => {
-      const letra = String.fromCharCode(65 + indice); // A, B, C, D, E
-      
-      const btn = document.createElement("button");
-      btn.className = "option-btn";
-      btn.innerHTML = `
-        <span class="option-marker">${letra}</span>
-        <span class="option-content-text">${opcao.texto}</span>
-      `;
-
-      // Evento de escolha
-      btn.addEventListener("click", () => {
-        // Mapear pontos
-        quizAnswers[opcao.area] += opcao.peso;
-        
-        // Prosseguir para próxima
-        currentQuestionIndex++;
-        if (currentQuestionIndex < totalPerguntas) {
-          renderizarPergunta();
-        } else {
-          calcularExibirResultados();
-        }
-      });
-
-      quizOptionsList.appendChild(btn);
-    });
-  }
-
-  // Sair do questionário antes de terminar
-  quitQuizBtn.addEventListener("click", () => {
-    if (confirm("Tem certeza que deseja cancelar o teste? Suas respostas atuais serão perdidas.")) {
-      testesQuizState.classList.add("hidden");
-      testesSelectionState.classList.remove("hidden");
-    }
-  });
-
-  // Fechar tela de resultados e voltar para seleção
-  btnRestartQuiz.addEventListener("click", () => {
-    testesResultState.classList.add("hidden");
-    testesSelectionState.classList.remove("hidden");
-  });
-
-  // Ir para profissões a partir do resultado
-  btnGoToProfessions.addEventListener("click", () => {
-    testesResultState.classList.add("hidden");
-    navegarPara("profissoes");
-  });
-
-  // Calcula os pontos e desenha a tela de resultado
-  async function calcularExibirResultados() {
-    testesQuizState.classList.add("hidden");
-    testesResultState.classList.remove("hidden");
-
-    // 1. Somar total de pontos respondidos
-    const totalPontos = Object.values(quizAnswers).reduce((a, b) => a + b, 0);
-
-    // 2. Determinar a área dominante
-    let areaDominante = "Tecnologia";
-    let maiorPontuação = -1;
-
-    for (const [area, pontos] of Object.entries(quizAnswers)) {
-      if (pontos > maiorPontuação) {
-        maiorPontuação = pontos;
-        areaDominante = area;
-      }
-    }
-
-    // Salvar resultado no banco de dados se o usuário estiver logado
-    if (currentUser) {
-      try {
-        const testTypeLabel = currentQuizType === "preferencias" ? "Preferências" : "Cenários";
-        await KetsudanDB.saveTestResult(currentUser.email, testTypeLabel, quizAnswers, areaDominante);
-      } catch (err) {
-        console.error("Erro ao salvar resultado no banco de dados:", err);
-      }
-    }
-
-    exibirResultadosNaTela(quizAnswers, areaDominante);
-  }
-
-  // Desenha a tela de resultado com as respostas fornecidas
-  function exibirResultadosNaTela(answers, dominantArea) {
-    const totalPontos = Object.values(answers).reduce((a, b) => a + b, 0);
-
-    // Descrições das áreas
-    const descricoesArea = {
-      "Tecnologia": "Você demonstra grande afinidade com resolução de problemas lógicos, análise de dados e criação de soluções digitais. Profissões desta área envolvem programar softwares, gerenciar dados e lidar com infraestruturas inteligentes de computadores.",
-      "Saúde": "Seu perfil indica forte vocação para empatia, escuta e cuidado direto com a saúde física e mental das pessoas. Carreiras nesta área se concentram no bem-estar humano, tratamentos médicos, terapias e cuidados preventivos.",
-      "Artes/Design": "Você é movido pela expressão visual, criação e narrativa. Áreas artísticas e de design trabalham a união de utilidade estética com criatividade, desenhando experiências, ilustrando ideias ou modelando mundos virtuais.",
-      "Negócios": "Você demonstra talento para organização, liderança e visão estratégica. A área de negócios engloba finanças, marketing estratégico, gerenciamento de projetos e a tomada de decisões cruciais para que marcas e empresas tenham sucesso.",
-      "Humanas": "Seu perfil valoriza a comunicação, a leitura, a história e o desenvolvimento social e intelectual. Esta área foca no ensino, investigação jornalística de fatos, entendimento de comportamentos sociais e na transformação educativa da sociedade."
-    };
-
-    // Mapeamento de ilustrações conceituais SVG para cada área vocacional (Estilo Oriental Minimalista)
-    const svgsArea = {
-      "Tecnologia": `
-        <svg viewBox="0 0 120 120" width="100%" height="100%" class="result-svg-illustration">
-          <rect x="20" y="25" width="80" height="50" rx="4" fill="#1b0003" stroke="#d4a373" stroke-width="2"/>
-          <line x1="45" y1="75" x2="35" y2="95" stroke="#d4a373" stroke-width="3" stroke-linecap="round"/>
-          <line x1="75" y1="75" x2="85" y2="95" stroke="#d4a373" stroke-width="3" stroke-linecap="round"/>
-          <line x1="30" y1="95" x2="90" y2="95" stroke="#d4a373" stroke-width="3" stroke-linecap="round"/>
-          <line x1="30" y1="35" x2="60" y2="35" stroke="#960018" stroke-width="2" stroke-linecap="round"/>
-          <line x1="30" y1="45" x2="80" y2="45" stroke="#f5e1ce" stroke-width="2" stroke-linecap="round"/>
-          <line x1="30" y1="55" x2="50" y2="55" stroke="#d4a373" stroke-width="2" stroke-linecap="round"/>
-          <line x1="30" y1="65" x2="70" y2="65" stroke="#f5e1ce" stroke-width="2" stroke-linecap="round"/>
-          <circle cx="85" cy="63" r="6" fill="#960018" opacity="0.8"/>
-          <text x="82" y="66" font-family="'Noto Serif JP'" font-size="8" fill="#f5e1ce" font-weight="bold">技</text>
-        </svg>
-      `,
-      "Saúde": `
-        <svg viewBox="0 0 120 120" width="100%" height="100%" class="result-svg-illustration">
-          <path d="M 60 30 Q 30 50 60 90 Q 90 50 60 30" fill="none" stroke="#d4a373" stroke-width="1.5" stroke-linecap="round"/>
-          <path d="M 60 30 Q 60 60 60 90" stroke="#d4a373" stroke-width="1" opacity="0.6"/>
-          <path d="M 40 40 C 40 80 80 80 80 40" fill="none" stroke="#f5e1ce" stroke-width="2.5" stroke-linecap="round"/>
-          <path d="M 60 72 C 60 100 85 95 85 95" fill="none" stroke="#f5e1ce" stroke-width="2" stroke-linecap="round"/>
-          <circle cx="85" cy="95" r="5" fill="#960018" stroke="#f5e1ce" stroke-width="1.5"/>
-          <path d="M 33 35 L 47 35 M 73 35 L 87 35" stroke="#d4a373" stroke-width="3" stroke-linecap="round"/>
-          <circle cx="95" cy="65" r="6" fill="#960018" opacity="0.8"/>
-          <text x="92" y="68" font-family="'Noto Serif JP'" font-size="8" fill="#f5e1ce" font-weight="bold">医</text>
-        </svg>
-      `,
-      "Artes/Design": `
-        <svg viewBox="0 0 120 120" width="100%" height="100%" class="result-svg-illustration">
-          <circle cx="60" cy="60" r="35" fill="none" stroke="#d4a373" stroke-width="1.5" stroke-dasharray="5 3"/>
-          <line x1="30" y1="90" x2="85" y2="35" stroke="#f5e1ce" stroke-width="3" stroke-linecap="round"/>
-          <polygon points="30,90 35,85 27,83" fill="#d4a373"/>
-          <line x1="90" y1="30" x2="45" y2="75" stroke="#d4a373" stroke-width="4" stroke-linecap="round"/>
-          <path d="M 45 75 Q 38 82 35 92 Q 45 88 50 80 Z" fill="#960018"/>
-          <circle cx="90" cy="75" r="6" fill="#960018" opacity="0.8"/>
-          <text x="87" y="78" font-family="'Noto Serif JP'" font-size="8" fill="#f5e1ce" font-weight="bold">美</text>
-        </svg>
-      `,
-      "Negócios": `
-        <svg viewBox="0 0 120 120" width="100%" height="100%" class="result-svg-illustration">
-          <rect x="20" y="35" width="80" height="50" fill="none" stroke="#d4a373" stroke-width="2"/>
-          <line x1="20" y1="50" x2="100" y2="50" stroke="#d4a373" stroke-width="2"/>
-          <line x1="36" y1="35" x2="36" y2="85" stroke="#f5e1ce" stroke-width="1"/>
-          <line x1="52" y1="35" x2="52" y2="85" stroke="#f5e1ce" stroke-width="1"/>
-          <line x1="68" y1="35" x2="68" y2="85" stroke="#f5e1ce" stroke-width="1"/>
-          <line x1="84" y1="35" x2="84" y2="85" stroke="#f5e1ce" stroke-width="1"/>
-          <circle cx="36" cy="42" r="3" fill="#960018"/>
-          <circle cx="52" cy="42" r="3" fill="#960018"/>
-          <circle cx="68" cy="42" r="3" fill="#960018"/>
-          <circle cx="84" cy="42" r="3" fill="#960018"/>
-          <circle cx="36" cy="60" r="3" fill="#f5e1ce"/>
-          <circle cx="36" cy="68" r="3" fill="#f5e1ce"/>
-          <circle cx="52" cy="60" r="3" fill="#f5e1ce"/>
-          <circle cx="68" cy="68" r="3" fill="#f5e1ce"/>
-          <circle cx="84" cy="60" r="3" fill="#f5e1ce"/>
-          <circle cx="85" cy="73" r="7" fill="#960018" opacity="0.9"/>
-          <text x="82" y="76" font-family="'Noto Serif JP'" font-size="9" fill="#f5e1ce" font-weight="bold">商</text>
-        </svg>
-      `,
-      "Humanas": `
-        <svg viewBox="0 0 120 120" width="100%" height="100%" class="result-svg-illustration">
-          <path d="M 20 85 C 40 85 55 80 60 70 C 65 80 80 85 100 85 L 100 45 C 80 45 65 40 60 30 C 55 40 40 45 20 45 Z" fill="#300006" stroke="#d4a373" stroke-width="2"/>
-          <line x1="60" y1="30" x2="60" y2="70" stroke="#d4a373" stroke-width="1.5"/>
-          <path d="M 28 53 L 48 53 M 28 61 L 44 61 M 28 69 L 48 69" stroke="#f5e1ce" stroke-width="1" stroke-linecap="round" opacity="0.6"/>
-          <path d="M 72 53 L 92 53 M 72 61 L 88 61 M 72 69 L 92 69" stroke="#f5e1ce" stroke-width="1" stroke-linecap="round" opacity="0.6"/>
-          <line x1="45" y1="35" x2="85" y2="85" stroke="#f5e1ce" stroke-width="2" stroke-linecap="round"/>
-          <path d="M 45 35 Q 40 30 35 25 Q 43 27 48 32 Z" fill="#d4a373"/>
-          <circle cx="95" cy="30" r="6" fill="#960018" opacity="0.8"/>
-          <text x="92" y="33" font-family="'Noto Serif JP'" font-size="8" fill="#f5e1ce" font-weight="bold">文</text>
-        </svg>
-      `
-    };
-
-    // Atualiza a tela de resultados
-    document.getElementById("dominant-area-name").textContent = dominantArea.toUpperCase();
-    document.getElementById("dominant-area-desc").textContent = descricoesArea[dominantArea];
-    
-    // Atualiza a ilustração conceitual SVG correspondente
-    const mediaContainer = document.getElementById("dominant-area-media");
-    if (mediaContainer) {
-      mediaContainer.innerHTML = svgsArea[dominantArea] || "";
-    }
-
-    // Recomendar profissões dessa área
-    const recomendadoList = document.getElementById("recommended-professions-list");
-    recomendadoList.innerHTML = "";
-    
-    const profsRecomendadas = ketsudanData.profissoes.filter(p => p.categoria === dominantArea);
-    
-    profsRecomendadas.forEach(prof => {
-      const li = document.createElement("li");
-      li.textContent = `${prof.icone} ${prof.nome}`;
-      li.addEventListener("click", () => {
-        abrirModalProfissao(prof.id);
-      });
-      recomendadoList.appendChild(li);
-    });
-
-    // Renderizar gráfico de barras dinâmico
-    const barsContainer = document.getElementById("chart-bars-container");
-    barsContainer.innerHTML = "";
-
-    const nomesAmigaveis = {
-      "Tecnologia": "Tecnologia",
-      "Saúde": "Saúde & Cuidado",
-      "Artes/Design": "Artes & Design",
-      "Negócios": "Negócios & Gestão",
-      "Humanas": "Ciências Humanas"
-    };
-
-    Object.entries(answers).forEach(([area, pontos]) => {
-      const porcentagem = totalPontos > 0 ? Math.round((pontos / totalPontos) * 100) : 0;
-      
-      const row = document.createElement("div");
-      row.className = "chart-row";
-      row.innerHTML = `
-        <div class="chart-row-label">
-          <span>${nomesAmigaveis[area]}</span>
-          <span>${porcentagem}%</span>
-        </div>
-        <div class="chart-row-bar-bg">
-          <div class="chart-row-bar-fill" style="width: 0%;"></div>
-        </div>
-      `;
-
-      barsContainer.appendChild(row);
-
-      setTimeout(() => {
-        const fill = row.querySelector(".chart-row-bar-fill");
-        if (fill) fill.style.width = `${porcentagem}%`;
-      }, 150);
-    });
-  }
 
   // Obtém os resultados de teste do banco de dados e os exibe na aba de seleção
   async function renderizarHistoricoTestes() {
@@ -1051,6 +786,13 @@ document.addEventListener("DOMContentLoaded", () => {
       const results = await KetsudanDB.getTestResults(currentUser.email);
       historicoSection.classList.remove("hidden");
       container.innerHTML = "";
+
+      // Recuperar o resultado do Teste 1 para desbloquear o Teste 2 caso ele já tenha sido feito
+      const lastTeste1 = results.find(res => res.testType.startsWith("Preferências"));
+      if (lastTeste1 && !areaPrimarioTeste) {
+        areaPrimarioTeste = lastTeste1.dominantArea;
+        atualizarEstadoTeste2();
+      }
 
       if (results.length === 0) {
         clearBtn.classList.add("hidden");
@@ -1069,6 +811,8 @@ document.addEventListener("DOMContentLoaded", () => {
       clearBtn.onclick = async () => {
         if (confirm("Deseja realmente limpar todo o seu histórico de testes? Esta ação é irreversível.")) {
           await KetsudanDB.clearTestResults(currentUser.email);
+          areaPrimarioTeste = null;
+          atualizarEstadoTeste2();
           renderizarHistoricoTestes();
         }
       };
@@ -1109,11 +853,21 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>
         `;
 
-        // Adicionar evento no botão "Ver Detalhes" para carregar o resultado
+        // Adicionar evento no botão "Ver Detalhes" para carregar o resultado correto
         item.querySelector(".btn-view-stored-result").addEventListener("click", () => {
           testesSelectionState.classList.add("hidden");
           testesResultState.classList.remove("hidden");
-          exibirResultadosNaTela(res.answers, res.dominantArea);
+          
+          if (res.testType.startsWith("Preferências")) {
+            document.getElementById("result-teste1-content").classList.remove("hidden");
+            document.getElementById("result-teste2-content").classList.add("hidden");
+            exibirResultadoTeste1(res.answers, res.dominantArea);
+          } else {
+            document.getElementById("result-teste1-content").classList.add("hidden");
+            document.getElementById("result-teste2-content").classList.remove("hidden");
+            const ranking = Object.entries(res.answers).sort(([, a], [, b]) => b - a);
+            exibirResultadoTeste2(ranking, res.dominantArea);
+          }
         });
 
         container.appendChild(item);
@@ -1123,6 +877,7 @@ document.addEventListener("DOMContentLoaded", () => {
       container.innerHTML = `<p class="error-message">Erro ao carregar o histórico de testes do banco de dados.</p>`;
     }
   }
+
 
   // ==========================================
   // GUIA DE PROFISSÕES (BUSCA E FILTRO)

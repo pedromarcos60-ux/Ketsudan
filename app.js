@@ -367,6 +367,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const quitQuizBtn = document.getElementById("quit-quiz-btn");
   const btnRestartQuiz = document.getElementById("btn-restart-quiz");
   const btnGoToProfessions = document.getElementById("btn-go-to-professions");
+  const btnStartTeste2 = document.getElementById("btn-start-teste2");
 
   const quizTitleDisplay = document.getElementById("quiz-title-display");
   const quizProgressText = document.getElementById("quiz-progress-text");
@@ -374,9 +375,20 @@ document.addEventListener("DOMContentLoaded", () => {
   const quizQuestionText = document.getElementById("quiz-question-text");
   const quizOptionsList = document.getElementById("quiz-options-list");
 
+  // Guarda a área revelada pelo Teste 1 na sessão atual
+  let areaPrimarioTeste = null;
+
+  // Mapa dos bancos de perguntas do Teste 2 por área
+  const bancoPorArea = {
+    "Tecnologia":   "testeSituacionalTecnologia",
+    "Saúde":        "testeSituacionalSaude",
+    "Artes/Design": "testeSituacionalArtes",
+    "Negócios":     "testeSituacionalNegocios",
+    "Humanas":      "testeSituacionalHumanas"
+  };
+
   // Controla o que exibir na aba de testes dependendo do login
   function gerenciarVisualizacaoTestes() {
-    // Esconder todas as sub-telas do teste
     testesGuestState.classList.add("hidden");
     testesSelectionState.classList.add("hidden");
     testesQuizState.classList.add("hidden");
@@ -386,44 +398,402 @@ document.addEventListener("DOMContentLoaded", () => {
       testesGuestState.classList.remove("hidden");
     } else {
       testesSelectionState.classList.remove("hidden");
+      atualizarEstadoTeste2();
       renderizarHistoricoTestes();
     }
   }
 
-  // Evento para Iniciar Teste de Preferências
+  // Atualiza o card do Teste 2 (bloqueado/desbloqueado) com base na área revelada
+  function atualizarEstadoTeste2() {
+    const cardTeste2 = document.getElementById("card-teste-2");
+    const btnTeste2 = document.getElementById("start-test-situ");
+    const descTeste2 = document.getElementById("teste2-desc");
+
+    if (!cardTeste2 || !btnTeste2) return;
+
+    if (areaPrimarioTeste) {
+      // Desbloquear o card
+      cardTeste2.classList.remove("locked");
+      btnTeste2.disabled = false;
+      btnTeste2.textContent = `Iniciar Teste de ${areaPrimarioTeste} →`;
+      if (descTeste2) {
+        descTeste2.textContent = `Cenários específicos da área de ${areaPrimarioTeste} para identificar as profissões mais compatíveis com o seu perfil.`;
+      }
+    } else {
+      // Manter bloqueado
+      cardTeste2.classList.add("locked");
+      btnTeste2.disabled = true;
+      btnTeste2.textContent = "Teste Bloqueado";
+    }
+  }
+
+  // Evento para Iniciar Teste 1 — Preferências (revela a área)
   startTestPrefBtn.addEventListener("click", () => {
     iniciarQuiz("preferencias", ketsudanData.testePreferencias);
   });
 
-  // Evento para Iniciar Teste Situacional
+  // Evento para Iniciar Teste 2 — Situacional específico da área
   startTestSituBtn.addEventListener("click", () => {
-    iniciarQuiz("situacional", ketsudanData.testeSituacional);
+    if (!areaPrimarioTeste) return;
+    const chave = bancoPorArea[areaPrimarioTeste];
+    const banco = ketsudanData[chave];
+    if (banco) {
+      iniciarQuiz("situacional", banco);
+    }
   });
+
+  // Botão "Fazer Teste 2" dentro da tela de resultado do Teste 1
+  if (btnStartTeste2) {
+    btnStartTeste2.addEventListener("click", () => {
+      if (!areaPrimarioTeste) return;
+      const chave = bancoPorArea[areaPrimarioTeste];
+      const banco = ketsudanData[chave];
+      if (banco) {
+        testesResultState.classList.add("hidden");
+        iniciarQuiz("situacional", banco);
+      }
+    });
+  }
 
   // Inicializador do Quiz
   function iniciarQuiz(tipo, bancoDePerguntas) {
     currentQuizQuestions = bancoDePerguntas;
     currentQuestionIndex = 0;
-    currentQuizType = tipo; // "preferencias" ou "situacional"
-    
-    // Resetar Pontuação
-    quizAnswers = {
-      "Tecnologia": 0,
-      "Saúde": 0,
-      "Artes/Design": 0,
-      "Negócios": 0,
-      "Humanas": 0
-    };
+    currentQuizType = tipo;
 
-    quizTitleDisplay.textContent = tipo === "preferencias" 
-      ? "Teste de Preferências" 
-      : "Teste de Cenários Situacionais";
+    if (tipo === "preferencias") {
+      // Teste 1 — Pontuação por área
+      quizAnswers = {
+        "Tecnologia": 0,
+        "Saúde": 0,
+        "Artes/Design": 0,
+        "Negócios": 0,
+        "Humanas": 0
+      };
+      quizTitleDisplay.textContent = "Etapa 1 — Descobrir Minha Área";
+    } else {
+      // Teste 2 — Pontuação por profissão (objeto vazio que cresce dinamicamente)
+      quizAnswers = {};
+      quizTitleDisplay.textContent = `Etapa 2 — Profissões em ${areaPrimarioTeste}`;
+    }
 
     testesSelectionState.classList.add("hidden");
+    testesResultState.classList.add("hidden");
     testesQuizState.classList.remove("hidden");
-    
+
     renderizarPergunta();
   }
+
+  // Renderiza a pergunta atual
+  function renderizarPergunta() {
+    const pergunta = currentQuizQuestions[currentQuestionIndex];
+    const totalPerguntas = currentQuizQuestions.length;
+
+    quizProgressText.textContent = `Pergunta ${currentQuestionIndex + 1} de ${totalPerguntas}`;
+    const pctProgresso = ((currentQuestionIndex + 1) / totalPerguntas) * 100;
+    quizProgressBar.style.width = `${pctProgresso}%`;
+    quizQuestionText.textContent = pergunta.pergunta;
+
+    quizOptionsList.innerHTML = "";
+    pergunta.opcoes.forEach((opcao, indice) => {
+      const letra = String.fromCharCode(65 + indice);
+
+      const btn = document.createElement("button");
+      btn.className = "option-btn";
+      btn.innerHTML = `
+        <span class="option-marker">${letra}</span>
+        <span class="option-content-text">${opcao.texto}</span>
+      `;
+
+      btn.addEventListener("click", () => {
+        if (currentQuizType === "preferencias") {
+          // Teste 1: pontuar área
+          quizAnswers[opcao.area] = (quizAnswers[opcao.area] || 0) + (opcao.peso || 1);
+        } else {
+          // Teste 2: pontuar profissão por ID
+          quizAnswers[opcao.profissao] = (quizAnswers[opcao.profissao] || 0) + 1;
+        }
+
+        currentQuestionIndex++;
+        if (currentQuestionIndex < totalPerguntas) {
+          renderizarPergunta();
+        } else {
+          calcularExibirResultados();
+        }
+      });
+
+      quizOptionsList.appendChild(btn);
+    });
+  }
+
+  // Sair do questionário antes de terminar
+  quitQuizBtn.addEventListener("click", () => {
+    if (confirm("Tem certeza que deseja cancelar o teste? Suas respostas atuais serão perdidas.")) {
+      testesQuizState.classList.add("hidden");
+      testesSelectionState.classList.remove("hidden");
+    }
+  });
+
+  // Fechar tela de resultados e voltar para seleção
+  btnRestartQuiz.addEventListener("click", () => {
+    testesResultState.classList.add("hidden");
+    // Resetar sessão para permitir refazer do zero
+    areaPrimarioTeste = null;
+    atualizarEstadoTeste2();
+    testesSelectionState.classList.remove("hidden");
+  });
+
+  // Ir para profissões a partir do resultado
+  btnGoToProfessions.addEventListener("click", () => {
+    testesResultState.classList.add("hidden");
+    navegarPara("profissoes");
+  });
+
+  // Calcula os pontos e desenha a tela de resultado correta
+  async function calcularExibirResultados() {
+    testesQuizState.classList.add("hidden");
+    testesResultState.classList.remove("hidden");
+
+    if (currentQuizType === "preferencias") {
+      // === RESULTADO DO TESTE 1: revelar área ===
+      let areaDominante = "Tecnologia";
+      let maiorPontuacao = -1;
+      for (const [area, pontos] of Object.entries(quizAnswers)) {
+        if (pontos > maiorPontuacao) {
+          maiorPontuacao = pontos;
+          areaDominante = area;
+        }
+      }
+
+      // Guardar área na sessão e desbloquear Teste 2
+      areaPrimarioTeste = areaDominante;
+      atualizarEstadoTeste2();
+
+      // Atualizar o botão "Fazer Teste 2" com o nome da área
+      if (btnStartTeste2) {
+        btnStartTeste2.textContent = `Fazer Teste 2 — Aprofundar em ${areaDominante} →`;
+      }
+
+      // Salvar no histórico
+      if (currentUser) {
+        try {
+          await KetsudanDB.saveTestResult(currentUser.email, "Preferências (Área)", quizAnswers, areaDominante);
+        } catch (err) {
+          console.error("Erro ao salvar resultado:", err);
+        }
+      }
+
+      // Mostrar resultado do Teste 1 e esconder Teste 2
+      document.getElementById("result-teste1-content").classList.remove("hidden");
+      document.getElementById("result-teste2-content").classList.add("hidden");
+
+      exibirResultadoTeste1(quizAnswers, areaDominante);
+
+    } else {
+      // === RESULTADO DO TESTE 2: profissões rankeadas ===
+
+      // Ranquear profissões por pontuação
+      const ranking = Object.entries(quizAnswers)
+        .sort(([, a], [, b]) => b - a);
+
+      // Salvar no histórico com a área como dominante
+      if (currentUser) {
+        try {
+          await KetsudanDB.saveTestResult(currentUser.email, `Profissões em ${areaPrimarioTeste}`, quizAnswers, areaPrimarioTeste);
+        } catch (err) {
+          console.error("Erro ao salvar resultado:", err);
+        }
+      }
+
+      // Mostrar resultado do Teste 2 e esconder Teste 1
+      document.getElementById("result-teste1-content").classList.add("hidden");
+      document.getElementById("result-teste2-content").classList.remove("hidden");
+
+      exibirResultadoTeste2(ranking, areaPrimarioTeste);
+    }
+  }
+
+  // Renderiza resultado do Teste 1 (área dominante + gráfico)
+  function exibirResultadoTeste1(answers, dominantArea) {
+    const totalPontos = Object.values(answers).reduce((a, b) => a + b, 0);
+
+    const descricoesArea = {
+      "Tecnologia": "Você demonstra grande afinidade com resolução de problemas lógicos, análise de dados e criação de soluções digitais. Profissões desta área envolvem programar softwares, gerenciar dados e lidar com infraestruturas inteligentes.",
+      "Saúde": "Seu perfil indica forte vocação para empatia, escuta e cuidado direto com a saúde física e mental das pessoas. Carreiras nesta área se concentram no bem-estar humano, tratamentos médicos, terapias e cuidados preventivos.",
+      "Artes/Design": "Você é movido pela expressão visual, criação e narrativa. Áreas artísticas e de design trabalham a união de estética com criatividade, desenhando experiências, ilustrando ideias ou modelando mundos virtuais.",
+      "Negócios": "Você demonstra talento para organização, liderança e visão estratégica. A área de negócios engloba finanças, marketing estratégico, gerenciamento de projetos e a tomada de decisões cruciais para que empresas tenham sucesso.",
+      "Humanas": "Seu perfil valoriza a comunicação, a leitura, a história e o desenvolvimento social e intelectual. Esta área foca no ensino, investigação jornalística, entendimento de comportamentos sociais e na transformação educativa da sociedade."
+    };
+
+    const svgsArea = {
+      "Tecnologia": `
+        <svg viewBox="0 0 120 120" width="100%" height="100%" class="result-svg-illustration">
+          <rect x="20" y="25" width="80" height="50" rx="4" fill="#1b0003" stroke="#d4a373" stroke-width="2"/>
+          <line x1="45" y1="75" x2="35" y2="95" stroke="#d4a373" stroke-width="3" stroke-linecap="round"/>
+          <line x1="75" y1="75" x2="85" y2="95" stroke="#d4a373" stroke-width="3" stroke-linecap="round"/>
+          <line x1="30" y1="95" x2="90" y2="95" stroke="#d4a373" stroke-width="3" stroke-linecap="round"/>
+          <line x1="30" y1="35" x2="60" y2="35" stroke="#960018" stroke-width="2" stroke-linecap="round"/>
+          <line x1="30" y1="45" x2="80" y2="45" stroke="#f5e1ce" stroke-width="2" stroke-linecap="round"/>
+          <line x1="30" y1="55" x2="50" y2="55" stroke="#d4a373" stroke-width="2" stroke-linecap="round"/>
+          <line x1="30" y1="65" x2="70" y2="65" stroke="#f5e1ce" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="85" cy="63" r="6" fill="#960018" opacity="0.8"/>
+          <text x="82" y="66" font-family="'Noto Serif JP'" font-size="8" fill="#f5e1ce" font-weight="bold">技</text>
+        </svg>
+      `,
+      "Saúde": `
+        <svg viewBox="0 0 120 120" width="100%" height="100%" class="result-svg-illustration">
+          <path d="M 60 30 Q 30 50 60 90 Q 90 50 60 30" fill="none" stroke="#d4a373" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M 40 40 C 40 80 80 80 80 40" fill="none" stroke="#f5e1ce" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M 60 72 C 60 100 85 95 85 95" fill="none" stroke="#f5e1ce" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="85" cy="95" r="5" fill="#960018" stroke="#f5e1ce" stroke-width="1.5"/>
+          <path d="M 33 35 L 47 35 M 73 35 L 87 35" stroke="#d4a373" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="95" cy="65" r="6" fill="#960018" opacity="0.8"/>
+          <text x="92" y="68" font-family="'Noto Serif JP'" font-size="8" fill="#f5e1ce" font-weight="bold">医</text>
+        </svg>
+      `,
+      "Artes/Design": `
+        <svg viewBox="0 0 120 120" width="100%" height="100%" class="result-svg-illustration">
+          <circle cx="60" cy="60" r="35" fill="none" stroke="#d4a373" stroke-width="1.5" stroke-dasharray="5 3"/>
+          <line x1="30" y1="90" x2="85" y2="35" stroke="#f5e1ce" stroke-width="3" stroke-linecap="round"/>
+          <polygon points="30,90 35,85 27,83" fill="#d4a373"/>
+          <line x1="90" y1="30" x2="45" y2="75" stroke="#d4a373" stroke-width="4" stroke-linecap="round"/>
+          <path d="M 45 75 Q 38 82 35 92 Q 45 88 50 80 Z" fill="#960018"/>
+          <circle cx="90" cy="75" r="6" fill="#960018" opacity="0.8"/>
+          <text x="87" y="78" font-family="'Noto Serif JP'" font-size="8" fill="#f5e1ce" font-weight="bold">美</text>
+        </svg>
+      `,
+      "Negócios": `
+        <svg viewBox="0 0 120 120" width="100%" height="100%" class="result-svg-illustration">
+          <rect x="20" y="35" width="80" height="50" fill="none" stroke="#d4a373" stroke-width="2"/>
+          <line x1="20" y1="50" x2="100" y2="50" stroke="#d4a373" stroke-width="2"/>
+          <line x1="36" y1="35" x2="36" y2="85" stroke="#f5e1ce" stroke-width="1"/>
+          <line x1="52" y1="35" x2="52" y2="85" stroke="#f5e1ce" stroke-width="1"/>
+          <line x1="68" y1="35" x2="68" y2="85" stroke="#f5e1ce" stroke-width="1"/>
+          <line x1="84" y1="35" x2="84" y2="85" stroke="#f5e1ce" stroke-width="1"/>
+          <circle cx="36" cy="42" r="3" fill="#960018"/>
+          <circle cx="52" cy="42" r="3" fill="#960018"/>
+          <circle cx="68" cy="42" r="3" fill="#960018"/>
+          <circle cx="84" cy="42" r="3" fill="#960018"/>
+          <circle cx="36" cy="60" r="3" fill="#f5e1ce"/>
+          <circle cx="52" cy="60" r="3" fill="#f5e1ce"/>
+          <circle cx="85" cy="73" r="7" fill="#960018" opacity="0.9"/>
+          <text x="82" y="76" font-family="'Noto Serif JP'" font-size="9" fill="#f5e1ce" font-weight="bold">商</text>
+        </svg>
+      `,
+      "Humanas": `
+        <svg viewBox="0 0 120 120" width="100%" height="100%" class="result-svg-illustration">
+          <path d="M 20 85 C 40 85 55 80 60 70 C 65 80 80 85 100 85 L 100 45 C 80 45 65 40 60 30 C 55 40 40 45 20 45 Z" fill="#300006" stroke="#d4a373" stroke-width="2"/>
+          <line x1="60" y1="30" x2="60" y2="70" stroke="#d4a373" stroke-width="1.5"/>
+          <path d="M 28 53 L 48 53 M 28 61 L 44 61 M 28 69 L 48 69" stroke="#f5e1ce" stroke-width="1" stroke-linecap="round" opacity="0.6"/>
+          <path d="M 72 53 L 92 53 M 72 61 L 88 61 M 72 69 L 92 69" stroke="#f5e1ce" stroke-width="1" stroke-linecap="round" opacity="0.6"/>
+          <circle cx="95" cy="30" r="6" fill="#960018" opacity="0.8"/>
+          <text x="92" y="33" font-family="'Noto Serif JP'" font-size="8" fill="#f5e1ce" font-weight="bold">文</text>
+        </svg>
+      `
+    };
+
+    document.getElementById("dominant-area-name").textContent = dominantArea.toUpperCase();
+    document.getElementById("dominant-area-desc").textContent = descricoesArea[dominantArea];
+
+    const mediaContainer = document.getElementById("dominant-area-media");
+    if (mediaContainer) {
+      mediaContainer.innerHTML = svgsArea[dominantArea] || "";
+    }
+
+    // Gráfico de barras
+    const barsContainer = document.getElementById("chart-bars-container");
+    barsContainer.innerHTML = "";
+    const nomesAmigaveis = {
+      "Tecnologia": "Tecnologia",
+      "Saúde": "Saúde & Cuidado",
+      "Artes/Design": "Artes & Design",
+      "Negócios": "Negócios & Gestão",
+      "Humanas": "Ciências Humanas"
+    };
+
+    Object.entries(answers).forEach(([area, pontos]) => {
+      const porcentagem = totalPontos > 0 ? Math.round((pontos / totalPontos) * 100) : 0;
+      const row = document.createElement("div");
+      row.className = "chart-row";
+      row.innerHTML = `
+        <div class="chart-row-label">
+          <span>${nomesAmigaveis[area]}</span>
+          <span>${porcentagem}%</span>
+        </div>
+        <div class="chart-row-bar-bg">
+          <div class="chart-row-bar-fill ${area === dominantArea ? "dominant-bar" : ""}" style="width: 0%;"></div>
+        </div>
+      `;
+      barsContainer.appendChild(row);
+      setTimeout(() => {
+        const fill = row.querySelector(".chart-row-bar-fill");
+        if (fill) fill.style.width = `${porcentagem}%`;
+      }, 150);
+    });
+  }
+
+  // Renderiza resultado do Teste 2 (profissões rankeadas)
+  function exibirResultadoTeste2(ranking, area) {
+    const container = document.getElementById("result2-ranking-container");
+    const label = document.getElementById("result2-area-label");
+    container.innerHTML = "";
+
+    if (label) {
+      label.textContent = `Resultado baseado nas suas respostas em cenários de ${area}. As profissões estão ordenadas por compatibilidade.`;
+    }
+
+    const medalhas = ["🥇", "🥈", "🥉"];
+    const totalPontos = ranking.reduce((sum, [, pts]) => sum + pts, 0);
+
+    ranking.forEach(([profissaoId, pontos], index) => {
+      const prof = ketsudanData.profissoes.find(p => p.id === profissaoId);
+      if (!prof) return;
+
+      const porcentagem = totalPontos > 0 ? Math.round((pontos / totalPontos) * 100) : 0;
+      const card = document.createElement("div");
+      card.className = `ranking-card ${index === 0 ? "ranking-top" : ""}`;
+      card.innerHTML = `
+        <div class="ranking-position">${medalhas[index] || `#${index + 1}`}</div>
+        <div class="ranking-info">
+          <div class="ranking-name">${prof.icone} ${prof.nome}</div>
+          <div class="ranking-bar-wrap">
+            <div class="ranking-bar-fill" style="width: 0%;"></div>
+          </div>
+          <div class="ranking-compat">${porcentagem}% de compatibilidade</div>
+        </div>
+        <button class="ranking-detail-btn" data-prof-id="${prof.id}">Ver detalhes →</button>
+      `;
+
+      card.querySelector(".ranking-detail-btn").addEventListener("click", () => {
+        abrirModalProfissao(prof.id);
+      });
+
+      container.appendChild(card);
+
+      setTimeout(() => {
+        const fill = card.querySelector(".ranking-bar-fill");
+        if (fill) fill.style.width = `${porcentagem}%`;
+      }, 100 + index * 80);
+    });
+  }
+
+
+
+
+
+
+
+  // Obtém os resultados de teste do banco de dados e os exibe na aba de seleção
+  async function renderizarHistoricoTestes() {
+    const historicoSection = document.getElementById("testes-historico-section");
+    const container = document.getElementById("historico-list-container");
+    const clearBtn = document.getElementById("btn-clear-history");
+
+    if (!currentUser) {
+      historicoSection.classList.add("hidden");
+      return;
+    }
+
 
   // Renderiza a pergunta atual na tela
   function renderizarPergunta() {

@@ -237,27 +237,33 @@
       <!-- Usuário Logado - Seleção do Teste -->
       <div id="testes-selection-state" class="testes-selection hidden">
         <div class="section-title-area">
-          <h2 class="section-title">Escolha seu método de reflexão</h2>
-          <p class="section-subtitle">Disponibilizamos dois testes objetivos e complementares para ampliar sua percepção sobre si mesmo.</p>
+          <h2 class="section-title">Jornada de Autoconhecimento</h2>
+          <p class="section-subtitle">Dois testes progressivos e conectados. O primeiro revela sua área, o segundo aponta suas profissões mais compatíveis dentro dela.</p>
         </div>
         
         <div class="testes-grid">
           <!-- Card Teste 1 -->
-          <div class="teste-option-card">
+          <div class="teste-option-card" id="card-teste-1">
             <div class="teste-card-decor"></div>
+            <div class="teste-card-step-badge">ETAPA 1</div>
             <span class="teste-icon">📌</span>
-            <h3>Preferências de Atividades</h3>
-            <p>Mapeamento de afinidade com base nas atividades que você mais gosta de realizar no seu tempo livre e ambiente escolar.</p>
-            <button id="start-test-pref" class="btn-primary">Iniciar Teste de Preferências</button>
+            <h3>Descobrir Minha Área</h3>
+            <p>Responda perguntas sobre suas preferências de atividades e descubra qual grande área vocacional combina mais com você.</p>
+            <button id="start-test-pref" class="btn-primary">Iniciar Teste de Área</button>
           </div>
           
-          <!-- Card Teste 2 -->
-          <div class="teste-option-card">
+          <!-- Card Teste 2 — bloqueado até completar Teste 1 -->
+          <div class="teste-option-card locked" id="card-teste-2">
             <div class="teste-card-decor"></div>
+            <div class="teste-card-step-badge">ETAPA 2</div>
+            <div class="teste-locked-overlay">
+              <span class="locked-icon">🔒</span>
+              <p class="locked-msg">Complete a Etapa 1 primeiro para desbloquear o teste específico da sua área.</p>
+            </div>
             <span class="teste-icon">🗺️</span>
-            <h3>Cenários Situacionais</h3>
-            <p>Mapeia seu perfil comportamental e de atitude resolvendo dilemas práticos de projetos e situações do dia a dia profissional.</p>
-            <button id="start-test-situ" class="btn-primary">Iniciar Teste de Cenários</button>
+            <h3>Descobrir Minhas Profissões</h3>
+            <p id="teste2-desc">Cenários situacionais específicos da sua área revelada. Aponta as profissões mais compatíveis com o seu perfil.</p>
+            <button id="start-test-situ" class="btn-primary" disabled>Teste Bloqueado</button>
           </div>
         </div>
 
@@ -296,48 +302,61 @@
 
       <!-- Tela de Resultados do Teste -->
       <div id="testes-result-state" class="testes-card result-state hidden">
-        <div class="result-header">
-          <span class="result-hanko">決</span>
-          <h2>Seu Perfil Vocacional Mapeado</h2>
-          <p>Com base em suas respostas objetivas, analisamos suas afinidades nas principais áreas do mercado.</p>
-        </div>
 
-        <div class="result-layout">
-          <!-- Bloco Principal do Perfil de Maior Afinidade -->
-          <div class="result-highlight-box">
-            <h3>Área de Maior Afinidade</h3>
-            <div class="dominant-area-header-layout">
-              <div class="dominant-area-text-side">
-                <div class="dominant-area-title" id="dominant-area-name">TECNOLOGIA</div>
-                <p id="dominant-area-desc" class="dominant-area-desc">
-                  Você demonstra grande inclinação para resolver problemas lógicos, estruturar soluções digitais e trabalhar com tecnologia, criação de ferramentas ou análise de sistemas.
-                </p>
-              </div>
-              <div class="dominant-area-image-wrapper" id="dominant-area-media">
-                <!-- Inserido dinamicamente via JS (ilustração SVG correspondente) -->
+        <!-- RESULTADO DO TESTE 1: Área dominante -->
+        <div id="result-teste1-content">
+          <div class="result-header">
+            <span class="result-hanko">決</span>
+            <h2>Sua Área Vocacional Revelada</h2>
+            <p>Com base em suas preferências, identificamos a grande área que mais combina com o seu perfil.</p>
+          </div>
+
+          <div class="result-layout">
+            <div class="result-highlight-box">
+              <h3>Área de Maior Afinidade</h3>
+              <div class="dominant-area-header-layout">
+                <div class="dominant-area-text-side">
+                  <div class="dominant-area-title" id="dominant-area-name">TECNOLOGIA</div>
+                  <p id="dominant-area-desc" class="dominant-area-desc">Carregando...</p>
+                </div>
+                <div class="dominant-area-image-wrapper" id="dominant-area-media"></div>
               </div>
             </div>
-            
-            <div class="recommended-professions-box">
-              <h4>Profissões Recomendadas para você:</h4>
-              <ul id="recommended-professions-list" class="recommended-prof-list">
-                <!-- Inserido dinamicamente -->
-              </ul>
+
+            <div class="result-chart-box">
+              <h3>Compatibilidade por Área</h3>
+              <p class="chart-helper">Suas pontuações de afinidade em todas as áreas:</p>
+              <div class="chart-bars" id="chart-bars-container"></div>
             </div>
           </div>
 
-          <!-- Bloco de Gráfico com Afinidades de Todas as Áreas -->
-          <div class="result-chart-box">
-            <h3>Gráfico de Compatibilidade</h3>
-            <p class="chart-helper">Abaixo estão suas pontuações de afinidade por área:</p>
-            <div class="chart-bars" id="chart-bars-container">
-              <!-- Gerado via JS: Barras de progresso com porcentagens -->
+          <div class="result-cta-teste2">
+            <div class="cta-teste2-text">
+              <span class="cta-icon">🗺️</span>
+              <div>
+                <strong>Próxima etapa: Descobrir suas profissões</strong>
+                <p>Agora faremos perguntas específicas da sua área para identificar as profissões mais compatíveis com o seu perfil.</p>
+              </div>
             </div>
+            <button id="btn-start-teste2" class="btn-primary">Fazer Teste 2 — Aprofundar na Área →</button>
+          </div>
+        </div>
+
+        <!-- RESULTADO DO TESTE 2: Profissões rankeadas -->
+        <div id="result-teste2-content" class="hidden">
+          <div class="result-header">
+            <span class="result-hanko">識</span>
+            <h2>Suas Profissões Mais Compatíveis</h2>
+            <p id="result2-area-label">Baseado no seu perfil e nas respostas da área, estas são as carreiras que mais combinam com você.</p>
+          </div>
+
+          <div class="result2-professions-ranking" id="result2-ranking-container">
+            <!-- Gerado via JS: lista rankeada de profissões -->
           </div>
         </div>
 
         <div class="result-actions">
-          <button id="btn-restart-quiz" class="btn-secondary">Fazer Outro Teste</button>
+          <button id="btn-restart-quiz" class="btn-secondary">Refazer Testes</button>
           <button id="btn-go-to-professions" class="btn-primary">Ver Todas as Profissões</button>
         </div>
       </div>

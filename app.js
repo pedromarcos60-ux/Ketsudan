@@ -757,9 +757,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const filterTagsContainer = document.getElementById("category-filter-tags");
   const professionsGridContainer = document.getElementById("professions-grid-container");
 
+  // Função auxiliar para normalizar texto removendo acentos
+  const normalizarTexto = (texto) => {
+    return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+  };
+
   // Escutar digitação na barra de busca
   searchInput.addEventListener("input", (e) => {
-    activeSearchTerm = e.target.value.toLowerCase().trim();
+    activeSearchTerm = normalizarTexto(e.target.value);
     renderizarProfissoes();
   });
 
@@ -787,9 +792,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // Filtrar profissões do banco
     const profsFiltradas = ketsudanData.profissoes.filter(prof => {
       const correspondeCategoria = activeCategoryFilter === "Todas" || prof.categoria === activeCategoryFilter;
-      const correspondeBusca = prof.nome.toLowerCase().includes(activeSearchTerm) || 
-                                prof.descricao.toLowerCase().includes(activeSearchTerm) ||
-                                prof.categoria.toLowerCase().includes(activeSearchTerm);
+      const correspondeBusca = normalizarTexto(prof.nome).includes(activeSearchTerm) || 
+                                normalizarTexto(prof.descricao).includes(activeSearchTerm) ||
+                                normalizarTexto(prof.categoria).includes(activeSearchTerm);
       return correspondeCategoria && correspondeBusca;
     });
 

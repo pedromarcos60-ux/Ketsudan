@@ -271,7 +271,7 @@ h1, h2, h3, h4 {
 }
 
 .btn-logout:hover {
-  color: var(--vinho-escuro);
+  color: var(--bege-claro);
 }
 
 .btn-back {
@@ -887,6 +887,7 @@ h1, h2, h3, h4 {
 .option-btn:hover .option-marker {
   border-color: var(--vinho-vermelho);
   background-color: var(--bege-claro);
+  color: var(--vinho-escuro);
 }
 
 /* Resultados */
@@ -971,12 +972,12 @@ h1, h2, h3, h4 {
 }
 
 .recommended-prof-list li {
-  background-color: var(--branco-puro);
+  background-color: var(--vinho-escuro);
   border: 1px solid var(--bege-quente);
   padding: 0.4rem 1rem;
   border-radius: 20px;
   font-size: 0.85rem;
-  color: var(--vinho-escuro);
+  color: var(--bege-claro);
   cursor: pointer;
   transition: var(--transicao-suave);
 }
@@ -984,6 +985,7 @@ h1, h2, h3, h4 {
 .recommended-prof-list li:hover {
   border-color: var(--vinho-vermelho);
   background-color: var(--bege-claro);
+  color: var(--vinho-escuro);
 }
 
 /* Gráfico de Barras */
@@ -1109,9 +1111,9 @@ h1, h2, h3, h4 {
 }
 
 .filter-tag.active-tag {
-  background-color: var(--vinho-escuro);
+  background-color: var(--vinho-vermelho);
   color: var(--bege-claro);
-  border-color: var(--vinho-escuro);
+  border-color: var(--vinho-vermelho);
 }
 
 /* Grid das Profissões */
@@ -1169,7 +1171,7 @@ h1, h2, h3, h4 {
   display: inline-block;
   font-size: 0.7rem;
   background-color: var(--cinza-suave);
-  color: var(--vinho-escuro);
+  color: var(--bege-claro);
   padding: 0.2rem 0.6rem;
   border-radius: 4px;
   font-weight: 600;
@@ -1205,7 +1207,7 @@ h1, h2, h3, h4 {
 
 .prof-salary-val {
   font-weight: 600;
-  color: var(--vinho-profundo);
+  color: var(--bege-quente);
 }
 
 .btn-card-more {
@@ -1415,7 +1417,7 @@ h1, h2, h3, h4 {
   display: inline-block;
   font-size: 0.75rem;
   background-color: var(--cinza-suave);
-  color: var(--vinho-escuro);
+  color: var(--bege-claro);
   padding: 0.25rem 0.8rem;
   border-radius: 4px;
   font-weight: 600;
@@ -1494,7 +1496,7 @@ h1, h2, h3, h4 {
 .salary-value {
   font-size: 1.3rem;
   font-weight: 700;
-  color: var(--vinho-escuro);
+  color: var(--bege-claro);
   display: block;
 }
 
@@ -1520,7 +1522,7 @@ h1, h2, h3, h4 {
 
 .skill-tag {
   background-color: var(--cinza-suave);
-  color: var(--vinho-escuro);
+  color: var(--bege-claro);
   border: 1px solid var(--bege-quente);
   padding: 0.4rem 0.8rem;
   border-radius: 6px;

@@ -807,13 +807,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       if (results.length === 0) {
-        clearBtn.classList.add("hidden");
-        container.innerHTML = `
-          <div class="no-history">
-            <span class="no-history-icon">⛩️</span>
-            <p>Você ainda não possui testes salvos no histórico. Mapeie seu perfil acima!</p>
-          </div>
-        `;
+        historicoSection.classList.add("hidden");
         return;
       }
 

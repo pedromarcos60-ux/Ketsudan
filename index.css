@@ -317,9 +317,12 @@ h1, h2, h3, h4 {
 /* CONTEÚDO PRINCIPAL */
 .main-content {
   flex: 1;
+  display: flex;
+  flex-direction: column;
   width: 90%;
   max-width: 1200px;
-  margin: 2rem auto;
+  margin: 0 auto;
+  padding: 2rem 0;
 }
 
 /* Gerenciador de Views SPA */
@@ -330,6 +333,13 @@ h1, h2, h3, h4 {
 
 .view.active-view {
   display: block;
+}
+
+/* Home view ocupa todo o espaço disponível */
+#home-view.active-view {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 @keyframes fadeIn {
@@ -344,14 +354,23 @@ h1, h2, h3, h4 {
 }
 
 /* SEÇÃO 1: HERO & HOME */
-.hero-section {
+.hero-layout {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 3rem 1rem;
+  width: 100%;
+}
+
+.hero-content {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 4rem 1rem;
-  max-width: 800px;
-  margin: 0 auto;
+  max-width: 780px;
+  width: 100%;
+  padding: 0 1rem;
 }
 
 .hero-decorative-line {
@@ -388,13 +407,43 @@ h1, h2, h3, h4 {
   color: var(--cinza-texto);
   margin-bottom: 2.5rem;
   font-weight: 300;
-  max-width: 680px;
+  max-width: 640px;
 }
 
 .hero-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 1rem;
-  margin-bottom: 5rem;
+  justify-content: center;
+}
+
+/* ── Responsividade Hero ── */
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2rem;
+  }
+  .hero-subtitle {
+    font-size: 1rem;
+  }
+  .hero-actions {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+  .hero-actions .btn-primary,
+  .hero-actions .btn-secondary {
+    width: 100%;
+    max-width: 320px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-title {
+    font-size: 1.6rem;
+  }
+  .hero-layout {
+    padding: 2rem 0.5rem;
+  }
 }
 
 /* Filosofia de Design / Grid de 3 Colunas */
